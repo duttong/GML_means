@@ -1,0 +1,74 @@
+# gases for the Ozone assessment
+gases: [
+  CFC11, CFC12, CFC113,
+  CH3CCl3, CCl4,
+  HCFC22, HCFC141b, HCFC142b,
+  H1211, H1301, H2402,
+  CH3Br, CH3Cl
+]
+gases_not_included: [CFC13, CFC112, CFC113a, CFC114, CFC115, H1202]
+
+# Use either 'combined' (ECD and MSD) or 'msd' data files from GML ftp/website.
+data_source:
+  combined: [CFC11, CFC12, CFC113, CCl4]
+  msd: [
+    HCFC22, HCFC141b, HCFC142b,
+    H1211, H1301, H2402,
+    CFC112, CFC113a, CFC114, CFC115,
+    CH3Br, CH3Cl, CH3CCl3
+  ]
+
+# Background sites used for all gas
+background_sites: [alt, sum, brw, cgo, kum, mhd, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+
+# Override background sites for specific gases
+# for HFCs and CH2Cl2 don't use mhd (these gases are not in the ozone assesment)
+gas_background_overrides:
+  CH2Cl2: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC134a: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+
+# Headers or meta data for annual mean data files
+annual_means_file_header: |
+  # Annual means for {gas}
+  # Calculated from NOAA/GML data.
+  # Flask pair means, in situ hourly data, and monthly means available through GML's website.
+  # https://gml.noaa.gov/hats/data.html
+  #
+  # Contact:
+  #   Stephen Montzka: Stephen.Montzka@noaa.gov
+  #   Isaac Vimont: Isaac.Vimont@noaa.gov
+  #   Geoff Dutton: Geoff.Dutton@noaa.gov
+  #
+  # Semi-hemispheric means:
+  #   HN: lat ≥ 30°N
+  #   LN: 0° ≤ lat < 30°N
+  #   LS: −30° < lat < 0°
+  #   HS: lat ≤ −30°N
+  # Global mean: average of the four semi-hemispheric means
+  # Data format:
+  #   year, HN, LN, LS, HS, Global
+  #
+  # Data source: NOAA Global Monitoring Laboratory
+  #   https://gml.noaa.gov/hats/data.html
+  #
+  # Data file: {gas}_annual_means.csv
+  # Generated on: {generated_on}
+  #
+
+# header for the GML file that contains all species (GML_annual_means.csv)
+GML_means_file_header: |
+  # Calculated global means from NOAA/GML data.
+  # Flask pair means, in situ hourly data, and monthly means available through GML's website.
+  # https://gml.noaa.gov/hats/data.html
+  #
+  # Contact:
+  #   Stephen Montzka: Stephen.Montzka@noaa.gov
+  #   Isaac Vimont: Isaac.Vimont@noaa.gov
+  #   Geoff Dutton: Geoff.Dutton@noaa.gov
+  #
+  # Data source: NOAA Global Monitoring Laboratory
+  #   https://gml.noaa.gov/hats/data.html
+  #
+  # Data file: GML_annual_means.csv
+  # Generated on: {generated_on}
+  #
