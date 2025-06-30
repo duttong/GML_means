@@ -21,9 +21,10 @@
 #   https://gml.noaa.gov/hats/data.html
 #
 # Data file: HCFC142b_annual_means.csv
-# Generated on: 2025-06-27 10:47:06
+# Generated on: 2025-06-30 16:20:15
 #
 year,HN,LN,LS,HS,Global
+1992,3.921,3.686,2.978,2.537,3.296
 1993,5.624,4.815,3.812,3.597,4.462
 1994,6.659,6.208,5.028,4.764,5.665
 1995,7.889,6.997,5.946,5.639,6.618

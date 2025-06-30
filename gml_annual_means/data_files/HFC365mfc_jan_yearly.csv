@@ -1,0 +1,42 @@
+# Annual means for HFC365mfc
+# Calculated from NOAA/GML data.
+# Flask pair means, in situ hourly data, and monthly means available through GML's website.
+# https://gml.noaa.gov/hats/data.html
+#
+# Contact:
+#   Stephen Montzka: Stephen.Montzka@noaa.gov
+#   Isaac Vimont: Isaac.Vimont@noaa.gov
+#   Geoff Dutton: Geoff.Dutton@noaa.gov
+#
+# Semi-hemispheric means:
+#   HN: lat ≥ 30°N
+#   LN: 0° ≤ lat < 30°N
+#   LS: −30° < lat < 0°
+#   HS: lat ≤ −30°N
+# Global mean: average of the four semi-hemispheric means
+# Data format:
+#   year, HN, LN, LS, HS, Global
+#
+# Data source: NOAA Global Monitoring Laboratory
+#   https://gml.noaa.gov/hats/data.html
+#
+# Data file: HFC365mfc_annual_means.csv
+# Generated on: 2025-06-30 16:20:41
+#
+year,HN,LN,LS,HS,Global
+2009,0.559,0.516,0.424,0.413,0.479
+2010,0.588,0.550,0.452,0.436,0.507
+2011,0.653,0.604,0.492,0.481,0.557
+2012,0.719,0.661,0.550,0.533,0.616
+2013,0.778,0.721,0.605,0.580,0.671
+2014,0.852,0.783,0.653,0.637,0.731
+2015,0.926,0.858,0.718,0.694,0.799
+2016,1.011,0.946,0.793,0.766,0.879
+2017,1.068,0.987,0.851,0.825,0.933
+2018,1.109,1.034,0.903,0.874,0.980
+2019,1.147,1.070,0.935,0.914,1.016
+2020,1.138,1.071,0.957,0.941,1.027
+2021,1.157,1.102,0.986,0.971,1.054
+2022,1.174,1.113,1.013,0.996,1.074
+2023,1.152,1.115,1.016,1.009,1.073
+2024,1.093,1.065,0.991,0.994,1.036

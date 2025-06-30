@@ -1,10 +1,13 @@
 # gases for the Ozone assessment
+gases_: [CFC11, HFC125]
+
 gases: [
   CFC11, CFC12, CFC113,
   CH3CCl3, CCl4,
   HCFC22, HCFC141b, HCFC142b,
   H1211, H1301, H2402,
-  CH3Br, CH3Cl
+  CH3Br, CH3Cl,
+  HFC32, HFC125, HFC134a, HFC143a, HFC152a, HFC227ea, HFC365mfc, HFC236fa
 ]
 gases_not_included: [CFC13, CFC112, CFC113a, CFC114, CFC115, H1202]
 
@@ -22,10 +25,17 @@ data_source:
 background_sites: [alt, sum, brw, cgo, kum, mhd, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
 
 # Override background sites for specific gases
-# for HFCs and CH2Cl2 don't use mhd (these gases are not in the ozone assesment)
+# for HFCs and CH2Cl2 don't use mhd
 gas_background_overrides:
   CH2Cl2: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC32: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC125: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
   HFC134a: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC143a: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC152a: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC227ea: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC365mfc: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC286fa: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
 
 # Headers or meta data for annual mean data files
 annual_means_file_header: |

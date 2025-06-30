@@ -2,344 +2,286 @@
 
 import pandas as pd
 import numpy as np
-import yaml            # pip install pyyaml
+import yaml
 import sys
 from pathlib import Path
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 
-
 sys.path.append('NOAA_halocarbons_loader')
 import NOAA_halocarbons_loader.halocarbons_loader as halocarbons_loader
 
-# ——— load config at module import ———
-_CFG_PATH = Path(__file__).parent / "gml_config.yaml"
-with open(_CFG_PATH) as f:
-    _CFG = yaml.safe_load(f)
 
-# extract bits
-_HEADER_TPL      = _CFG["annual_means_file_header"]
-_GML_HEADER_TPL  = _CFG["GML_means_file_header"]
-GASES            = _CFG["gases"]
-SOURCES          = _CFG["data_source"]
-COMBO_GASES      = SOURCES.get("combined", [])
-MSD_GASES        = SOURCES.get("msd", [])
-DEFAULT_BK_SITES = _CFG["background_sites"]
-BK_OVERRIDES     = _CFG.get("gas_background_overrides", {})
+class GMLAnnualMeans:
+    def __init__(self):
+        config_path = Path(__file__).parent / "gml_config.yaml"
+        self.config_path = Path(config_path)
+        self._load_config()
+        self.gml = halocarbons_loader.HATS_Loader()
 
+    def _load_config(self):
+        """ parses the config yaml file """
+        with open(self.config_path) as f:
+            self.config = yaml.safe_load(f)
+        self.header_tpl = self.config["annual_means_file_header"]
+        self.gml_header_tpl = self.config["GML_means_file_header"]
+        self.gases = self.config["gases"]
+        self.sources = self.config["data_source"]
+        self.combo_gases = self.sources.get("combined", [])
+        self.msd_gases = self.sources.get("msd", [])
+        self.default_bk_sites = self.config["background_sites"]
+        self.bk_overrides = self.config.get("gas_background_overrides", {})
 
-gml = halocarbons_loader.HATS_Loader()
+    def refactor_combo_df(self, df):
+        """ The combined datafiles are structured differently than flask data files.
+            This method refactors the combinded file to be similar to flask files.
+        """
+        df2 = df.copy()
+        df2.index.name = 'date'
+        df2 = df2.reset_index()
 
-def refactor_combo_df(df):
-    """
-    Load and refactor a combined GML data file into long format.
-    
-    Parameters
-    ----------
-    file_path : str or Path
-        Path to the combined GML data CSV file.
-        
-    Returns
-    -------
-    pandas.DataFrame
-        Refactored DataFrame in long format.
-    """
-    
-    df2 = df.copy()
-    df2.index.name = 'date'
-    df2 = df2.reset_index()
+        to_drop = ['NH', 'NH_sd', 'SH', 'SH_sd', 'Global', 'Global_sd', 'Programs']
+        df2 = df2.drop(columns=to_drop)
 
-    # Drop the unwanted columns:
-    to_drop = ['NH','NH_sd','SH','SH_sd','Global','Global_sd','Programs']
-    df2 = df2.drop(columns=to_drop)
+        mf_cols = [c for c in df2.columns if not c.endswith('_sd') and c != 'date']
+        sd_cols = [f"{c}_sd" for c in mf_cols]
 
-    # Identify which columns are “mf” vs “sd”:
-    mf_cols = [c for c in df2.columns if not c.endswith('_sd') and c != 'date']
-    sd_cols = [f"{c}_sd" for c in mf_cols]
+        mf_long = df2.melt(id_vars='date', value_vars=mf_cols, var_name='site', value_name='mf')
+        sd_long = df2.melt(id_vars='date', value_vars=sd_cols, var_name='site', value_name='sd')
+        sd_long['site'] = sd_long['site'].str[:-3]
 
-    # Melt the mf columns:
-    mf_long = df2.melt(
-        id_vars='date',
-        value_vars=mf_cols,
-        var_name='site',
-        value_name='mf'
-    )
+        long_df = pd.merge(mf_long, sd_long, on=['date', 'site'])
+        long_df = long_df.sort_values(['date', 'site']).reset_index(drop=True)
+        long_df = self.gml.add_location(long_df)
+        long_df.reset_index(inplace=True)
 
-    # Melt the sd columns, then strip the “_sd” suffix to get the same site names:
-    sd_long = df2.melt(
-        id_vars='date',
-        value_vars=sd_cols,
-        var_name='site',
-        value_name='sd'
-    )
-    sd_long['site'] = sd_long['site'].str[:-3]
+        return long_df
 
-    # Merge them back together:
-    long_df = pd.merge(mf_long, sd_long, on=['date','site'])
+    def semi_hemispheric_means(self, df, gas, sites_included=None, phi=30.0):
+        """
+        Compute cosine‐latitude weighted monthly means for four semi‐hemispheres
+        and the global mean (average of the four).
 
-    long_df = long_df.sort_values(['date','site']).reset_index(drop=True)
-    long_df = gml.add_location(long_df)
-    long_df.reset_index(inplace=True)
-    
-    return long_df
+        Semi‐hemispheres:
+            HN: lat ≥  phi
+            LN: 0 ≤ lat < phi
+            LS: −phi < lat < 0
+            HS: lat ≤ −phi
 
-def semi_hemispheric_means(df, sites_included=None, phi=30.0):
-    """
-    Compute cosine‐latitude weighted monthly means for four semi‐hemispheres
-    and the global mean (average of the four).
+        Parameters
+        ----------
+        df : pandas.DataFrame
+            Must contain columns ['site','date','lat','mf'].
+        gas: str
+            Used for gas and site specific weights. Namely for HFCs PSA is deweighted (Steve's method)
+        sites_included : list of str, optional
+            If given, only rows where df['site'] is in this list are used.
+        phi : float, optional
+            Latitude cutoff (in degrees) between “low” and “high” zones.
 
-    Semi‐hemispheres:
-        HN: lat ≥  phi
-        LN: 0 ≤ lat < phi
-        LS: −phi < lat < 0
-        HS: lat ≤ −phi
-
-    Parameters
-    ----------
-    df : pandas.DataFrame
-        Must contain columns ['site','date','lat','mf'].
-    sites_included : list of str, optional
-        If given, only rows where df['site'] is in this list are used.
-    phi : float, optional
-        Latitude cutoff (in degrees) between “low” and “high” zones.
-
-    Returns
-    -------
-    semi_means : pandas.DataFrame
-        Index = date  
-        Columns = ['HN','LN','LS','HS','Global']  
-        Values = weighted mean of mf for each region, and Global = mean of the four.
-    """
-    df = df.copy()
-    df.reset_index(inplace=True)
-    
-    if sites_included is not None:
-        df = df[df['site'].isin(sites_included)]
-
-    # bump 'spo' to lat = –65°
-    df.loc[df['site']=='spo', 'lat'] = -65.0
-
-    # bucket into semi-hemispheres
-    def _bucket(lat):
-        if   lat >=  phi: return 'HN'
-        elif lat >=   0 : return 'LN'
-        elif lat <=  -phi: return 'HS'
-        else:              return 'LS'
-    df['region'] = df['lat'].apply(_bucket)
-
-    # compute cosine-latitude weights
-    df['w'] = np.cos(np.deg2rad(df['lat']))
-    
-    # validate data and drop rows with NaN in 'mf'
-    # (this is necessary for the groupby weighted mean to work correctly)
-    df_valid = df.dropna(subset=['mf'])
-
-    # group by region & date, take weighted mean
-    weighted = (
-        df_valid
-        .groupby(['region','date'])[['mf','w']]
-        .apply(lambda g: np.average(g['mf'], weights=g['w']))
-        .reset_index(name='mf_semi_mean')
-    )
-
-    # pivot to wide form
-    semi_means = weighted.pivot(index='date', columns='region', values='mf_semi_mean')
-
-    # compute global mean = average of the four semi-hemispheric columns
-    # (all four semi-hemispheric means must be present)
-    for col in ['HN','LN','LS','HS']:
-        if col not in semi_means.columns:
-            semi_means[col] = np.nan
-    semi_means['Global'] = semi_means[['HN','LN','LS','HS']].mean(axis=1, skipna=False)
-
-    return semi_means
-
-def annual_means(gas, end_year=None, save_file=False):
-    """
-    Calculate annual means from NOAA/GML data available through GML's website (and legacy FTP site).
-    The annual means are computed for two different periods:
-    - January to January (starting from January of the first year to January of the next year)
-    - July to July (starting from July of the first year to July of the next year)
-    The results are saved as CSV files in the 'gml_annual_means' directory.
-    Parameters
-    ----------
-    gas : str
-        The name of the gas for which to calculate annual means (e.g., 'CH3br').
-    end_year : int, optional
-        The last year to include in the annual means. If None, defaults to the previous year.
-    Returns
-    -------
-    df : pandas.DataFrame or None
-        DataFrame containing the annual means for the specified gas, or None if no data is found.
-    Notes
-    -----
-    - The function uses the NOAA halocarbons loader to fetch data.
-    - The annual means are calculated as semi-hemispheric means, which are then averaged globally.
-    - The results are saved in the 'gml_annual_means' directory with the gas name as part of the filename.
-    - The index of the resulting DataFrame is the year, formatted as YYYY.
-    - The function prints a message indicating whether the annual means were successfully calculated and saved.
-    Examples
-    --------
-    >>> annual_means('CH3br')
-    >>> annual_means('MC', end_year=2020)
-    """
-    
-    program = 'combined' if gas in COMBO_GASES else 'msd'
-    
-    df = gml.loader(gas, program=program, gapfill=True)
-    if df.empty:
-        print(f"No data found for {gas}.")
-        return None
-    
-    if program == 'combined':
-        df = refactor_combo_df(df)
-    else:
+        Returns
+        -------
+        semi_means : pandas.DataFrame
+            Index = date  
+            Columns = ['HN','LN','LS','HS','Global']  
+            Values = weighted mean of mf for each region, and Global = mean of the four.
+        """
+        df = df.copy()
         df.reset_index(inplace=True)
-    
-    # background sites
-    bksites = BK_OVERRIDES.get(gas, DEFAULT_BK_SITES)
 
-    means = semi_hemispheric_means(df, sites_included=bksites)
+        if sites_included is not None:
+            df = df[df['site'].isin(sites_included)]
 
-    # drop everything after end_year
-    if end_year is None:
-        end_year = pd.Timestamp.now().year - 1
-    else:
-        end_year = int(end_year)
-    means = means.loc[means.index.year <= end_year]
+        # Adjust weights for specific sites
+        df.loc[df['site'] == 'spo', 'lat'] = -65.0
+        if gas in ['CH2Cl2', 'HFC32', 'HFC125', 'HFC134a', 'HFC143a', 'HFC152a', 
+                   'HFC227ea', 'HFC365mfc', 'HFC236fa']:
+            df.loc[df['site'] == 'psa', 'lat'] = -80.0
 
-    # JAN‐to‐JAN
-    jan_mean  = means.resample('YS-JAN', label='left', closed='left').mean()
-    jan_count = means.resample('YS-JAN', label='left', closed='left').count()
-    # keep only those years where *all* regions have 12 months
-    valid_jan = jan_count.min(axis=1) >= 12
-    jan_yearly = jan_mean.loc[valid_jan]
+        # Define regions based on latitude
+        def _bucket(lat):
+            if lat >= phi:
+                return 'HN'
+            elif lat >= 0:
+                return 'LN'
+            elif lat <= -phi:
+                return 'HS'
+            else:
+                return 'LS'
 
-    # JUL‐to‐JUL
-    jul_mean  = means.resample('YS-JUL', label='left', closed='left').mean()
-    jul_count = means.resample('YS-JUL', label='left', closed='left').count()
-    valid_jul = jul_count.min(axis=1) >= 12
-    jul_yearly = jul_mean.loc[valid_jul]
+        df['region'] = df['lat'].apply(_bucket)
+        df['w'] = np.cos(np.deg2rad(df['lat']))
 
-    # reorder both DataFrames
-    col_order = ['HN','LN','LS','HS','Global']
-    jan_yearly = jan_yearly[col_order]
-    jul_yearly = jul_yearly[col_order]
-
-    # save out
-    if save_file:
-        save_dir = Path("gml_annual_means/data_files")
-        save_dir.mkdir(exist_ok=True)
-        annual_means_figure(gas, df, jan_yearly)
-        
-        for period, df_yearly in [("jan", jan_yearly), ("jul", jul_yearly)]:
-            out_file = save_dir / f"{gas}_{period}_yearly.csv"
-            hdr = get_file_header(gas)
-            with open(out_file, "w") as fh:
-                fh.write(hdr)
-                df_yearly.to_csv(
-                    fh,
-                    float_format="%.3f",
-                    date_format="%Y",
-                    index_label="year"
+        # Calculate weighted means for each region independently
+        weighted_means = {}
+        for region in ['HN', 'LN', 'LS', 'HS']:
+            region_df = df[df['region'] == region]
+            if not region_df.empty:
+                weighted_means[region] = (
+                    region_df.groupby('date')[['mf', 'w']]
+                    .apply(lambda g: np.average(g['mf'], weights=g['w']))
                 )
-        print(f"Annual means for {gas} calculated and saved.")
+            else:
+                weighted_means[region] = pd.Series(dtype=float)
+
+        # Combine results into a DataFrame
+        semi_means = pd.DataFrame(weighted_means)
+
+        # Calculate Global mean using only valid values from all four regions
+        semi_means['Global'] = semi_means[['HN', 'LN', 'LS', 'HS']].mean(axis=1, skipna=False)
+
+        return semi_means
+
+    def annual_means(self, gas, end_year=None, save_file=False):
+        """
+            Calculate annual means from NOAA/GML data available through GML's website (and legacy FTP site).
+            The annual means are computed for two different periods:
+            - January to January (starting from January of the first year to January of the next year)
+            - July to July (starting from July of the first year to July of the next year)
+            The results are saved as CSV files in the 'gml_annual_means' directory.
+            Parameters
+            ----------
+            gas : str
+                The name of the gas for which to calculate annual means (e.g., 'CH3br').
+            end_year : int, optional
+                The last year to include in the annual means. If None, defaults to the previous year.
+            Returns
+            -------
+            df : pandas.DataFrame or None
+                DataFrame containing the annual means for the specified gas, or None if no data is found.
+            Notes
+            -----
+            - The function uses the NOAA halocarbons loader to fetch data.
+            - The annual means are calculated as semi-hemispheric means, which are then averaged globally.
+            - The results are saved in the 'gml_annual_means' directory with the gas name as part of the filename.
+            - The index of the resulting DataFrame is the year, formatted as YYYY.
+            - The function prints a message indicating whether the annual means were successfully calculated and saved.
+        """
         
-    return df, jan_yearly
+        program = 'combined' if gas in self.combo_gases else 'msd'
+        df = self.gml.loader(gas, program=program, gapfill=True)
+        if df.empty:
+            print(f"No data found for {gas}.")
+            return None
 
-def annual_means_figure(gas, raw, annual):
-    fig, ax = plt.subplots()
-    fig.suptitle(f'NOAA/GML {gas} annual means', fontsize=16)
-
-    # draw all background sites (no legend entries)
-    bksites = BK_OVERRIDES.get(gas, DEFAULT_BK_SITES)
-    for site in raw['site'].unique():
-        if site not in bksites:
-            continue
-        sd = raw[raw['site'] == site]
-        ax.plot(sd['date'], sd['mf'],
-                color='0.7', alpha=0.7, label='_nolegend_')
-
-    # proxy for background-sites legend entry
-    bg_proxy = Line2D([0], [0], color='0.7', alpha=0.7, linewidth=1)
-
-    # plot each annual column, shifting forward 6 months
-    x = annual.index + pd.DateOffset(months=6)
-    mean_handles = []
-    for col in annual.columns:
-        if col == 'Global':
-            # force Global to be black
-            h, = ax.plot(x, annual[col],
-                        color='k', marker='o', linestyle='-', linewidth=2, markersize=4,
-                        label=col)
+        if program == 'combined':
+            df = self.refactor_combo_df(df)
         else:
-            # let matplotlib cycle default colors for the others
-            h, = ax.plot(x, annual[col],
-                        marker='', linestyle='-', linewidth=1, label=col)
-        mean_handles.append(h)
+            df.reset_index(inplace=True)
 
-    # assemble legend: one entry for bg sites + one per annual series
-    ax.legend(
-        [bg_proxy] + mean_handles,
-        ['background sites'] + list(annual.columns),
-        ncol=1,
-        loc='best'
-    )
+        bksites = self.bk_overrides.get(gas, self.default_bk_sites)
+        means = self.semi_hemispheric_means(df, gas, sites_included=bksites)
 
-    ax.set_xlabel('Year')
-    ax.set_ylabel(f'{gas} mole fraction (ppt)')
-    
-    save_dir = Path("gml_annual_means/figures")
-    save_dir.mkdir(exist_ok=True)
+        if end_year is None:
+            end_year = pd.Timestamp.now().year - 1
+        else:
+            end_year = int(end_year)
+        means = means.loc[means.index.year <= end_year]
 
-    out_png = save_dir / f"{gas}_annual_means.png"
-    print(f"Saving annual means figure for {gas} to {out_png}")
-    fig.savefig(out_png, dpi=300, bbox_inches='tight')
-    plt.close(fig)
-    
+        jan_mean = means.resample('YS-JAN', label='left', closed='left').mean()
+        jul_mean = means.resample('YS-JUL', label='left', closed='left').mean()
 
-def get_file_header(gas: str) -> str:
-    now = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
-    return _HEADER_TPL.format(gas=gas, generated_on=now)
+        col_order = ['HN', 'LN', 'LS', 'HS', 'Global']
+        jan_mean = jan_mean[col_order]
+        jul_mean = jul_mean[col_order]
+        
+        if save_file:
+            save_dir = Path("gml_annual_means/data_files")
+            save_dir.mkdir(exist_ok=True)
+            self.annual_means_figure(gas, df, jan_mean)
+
+            for period, df_yearly in [("jan", jan_mean), ("jul", jul_mean)]:
+                out_file = save_dir / f"{gas}_{period}_yearly.csv"
+                hdr = self.get_file_header(gas)
+                with open(out_file, "w") as fh:
+                    fh.write(hdr)
+                    #valid = df_yearly.min(axis=1) >= 12
+                    #df_yearly = df_yearly.loc[valid]
+                    df_yearly.to_csv(
+                        fh,
+                        float_format="%.3f",
+                        date_format="%Y",
+                        index_label="year"
+                    )
+            print(f"Annual means for {gas} calculated and saved.")
+
+        return df, jan_mean
+
+    def annual_means_figure(self, gas, raw, annual):
+        fig, ax = plt.subplots()
+        fig.suptitle(f'NOAA/GML {gas} annual means', fontsize=16)
+        
+        today = pd.Timestamp.today().normalize()
+
+        bksites = self.bk_overrides.get(gas, self.default_bk_sites)
+        for site in raw['site'].unique():
+            if site not in bksites:
+                continue
+            sd = raw[raw['site'] == site]
+            sd = sd[sd['date'] <= today]    # trim off forcast data
+            ax.plot(sd['date'], sd['mf'], color='0.7', alpha=0.7, label='_nolegend_')
+
+        bg_proxy = Line2D([0], [0], color='0.7', alpha=0.7, linewidth=1)
+
+        x = annual.index + pd.DateOffset(months=6)
+        mean_handles = []
+        for col in annual.columns:
+            if col == 'Global':
+                h, = ax.plot(x, annual[col], color='k', marker='o', linestyle='-', linewidth=2, markersize=4, label=col)
+            else:
+                h, = ax.plot(x, annual[col], marker='', linestyle='-', linewidth=1, label=col)
+            mean_handles.append(h)
+
+        ax.legend([bg_proxy] + mean_handles, ['background sites'] + list(annual.columns), ncol=1, loc='best')
+        ax.set_xlabel('Year')
+        ax.set_ylabel(f'{gas} mole fraction (ppt)')
+
+        save_dir = Path("gml_annual_means/figures")
+        save_dir.mkdir(exist_ok=True)
+
+        out_png = save_dir / f"{gas}_annual_means.png"
+        print(f"Saving annual means figure for {gas} to {out_png}")
+        fig.savefig(out_png, dpi=300, bbox_inches='tight')
+        plt.close(fig)
+
+    def get_file_header(self, gas):
+        now = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
+        return self.header_tpl.format(gas=gas, generated_on=now)
+
+    def main(self):
+        dfs = []
+        for gas in self.gases:
+            raw, jan = self.annual_means(gas, save_file=True)
+            if jan is not None and "Global" in jan.columns:
+                s = jan["Global"].copy()
+                s.name = gas
+                dfs.append(s)
+
+        if not dfs:
+            print("No data found for any gases.")
+            return
+
+        all_jan = pd.concat(dfs, axis=1)
+        mid_years = all_jan.index.year + 0.5
+        all_jan.index = mid_years
+        all_jan.index.name = "year"
+        all_jan.index = all_jan.index.map(lambda y: f"{y:.1f}")
+
+        out_file = "gml_annual_means/GML_annual_means.csv"
+        now = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
+        hdr = self.gml_header_tpl.format(generated_on=now)
+        with open(out_file, "w") as fh:
+            fh.write(hdr)
+            all_jan.to_csv(
+                fh,
+                float_format="%.3f",
+                na_rep="NaN",
+                index_label="year"
+            )
+
+        print(f"All annual means saved to '{out_file}'")
 
 
-def main():
-    dfs = []
-    for gas in GASES:
-        raw, jan = annual_means(gas, save_file=True)
-        if jan is not None and "Global" in jan.columns:
-            # extract only the Global column, rename it to the gas
-            s = jan["Global"].copy()
-            s.name = gas
-            dfs.append(s)
-
-    if not dfs:
-        print("No data found for any gases.")
-        return
-
-    # now concat a bunch of single‐column Series → one col per gas
-    all_jan = pd.concat(dfs, axis=1)
-
-    # shift the index to mid‐year floats, and name it "year"
-    mid_years = all_jan.index.year + 0.5
-    all_jan.index = mid_years
-    all_jan.index.name = "year"
-    all_jan.index = all_jan.index.map(lambda y: f"{y:.1f}")
-
-    out_file = "gml_annual_means/GML_annual_means.csv"
-    now = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
-    hdr = _GML_HEADER_TPL.format(generated_on=now)
-    with open(out_file, "w") as fh:
-        fh.write(hdr)
-        # write the entire DataFrame — header will be: year,<gas1>,<gas2>,...
-        all_jan.to_csv(
-            fh,
-            float_format="%.3f",
-            na_rep="NaN",
-            index_label="year"
-        )
-
-    print(f"All annual means saved to '{out_file}'")
-    
 if __name__ == '__main__':
-    main()
+    gml_annual_means = GMLAnnualMeans()
+    gml_annual_means.main()

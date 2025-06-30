@@ -1,0 +1,36 @@
+# Annual means for HFC236fa
+# Calculated from NOAA/GML data.
+# Flask pair means, in situ hourly data, and monthly means available through GML's website.
+# https://gml.noaa.gov/hats/data.html
+#
+# Contact:
+#   Stephen Montzka: Stephen.Montzka@noaa.gov
+#   Isaac Vimont: Isaac.Vimont@noaa.gov
+#   Geoff Dutton: Geoff.Dutton@noaa.gov
+#
+# Semi-hemispheric means:
+#   HN: lat ≥ 30°N
+#   LN: 0° ≤ lat < 30°N
+#   LS: −30° < lat < 0°
+#   HS: lat ≤ −30°N
+# Global mean: average of the four semi-hemispheric means
+# Data format:
+#   year, HN, LN, LS, HS, Global
+#
+# Data source: NOAA Global Monitoring Laboratory
+#   https://gml.noaa.gov/hats/data.html
+#
+# Data file: HFC236fa_annual_means.csv
+# Generated on: 2025-06-30 16:20:43
+#
+year,HN,LN,LS,HS,Global
+2015,0.145,0.147,0.131,0.131,0.142
+2016,0.154,0.158,0.141,0.140,0.148
+2017,0.167,0.168,0.153,0.153,0.160
+2018,0.182,0.180,0.168,0.168,0.175
+2019,0.197,0.195,0.181,0.178,0.187
+2020,0.207,0.207,0.191,0.190,0.199
+2021,0.219,0.219,0.205,0.204,0.212
+2022,0.233,0.233,0.219,0.217,0.225
+2023,0.245,0.247,0.231,0.224,0.236
+2024,0.253,,0.238,0.242,

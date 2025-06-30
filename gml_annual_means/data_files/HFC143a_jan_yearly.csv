@@ -1,0 +1,45 @@
+# Annual means for HFC143a
+# Calculated from NOAA/GML data.
+# Flask pair means, in situ hourly data, and monthly means available through GML's website.
+# https://gml.noaa.gov/hats/data.html
+#
+# Contact:
+#   Stephen Montzka: Stephen.Montzka@noaa.gov
+#   Isaac Vimont: Isaac.Vimont@noaa.gov
+#   Geoff Dutton: Geoff.Dutton@noaa.gov
+#
+# Semi-hemispheric means:
+#   HN: lat ≥ 30°N
+#   LN: 0° ≤ lat < 30°N
+#   LS: −30° < lat < 0°
+#   HS: lat ≤ −30°N
+# Global mean: average of the four semi-hemispheric means
+# Data format:
+#   year, HN, LN, LS, HS, Global
+#
+# Data source: NOAA Global Monitoring Laboratory
+#   https://gml.noaa.gov/hats/data.html
+#
+# Data file: HFC143a_annual_means.csv
+# Generated on: 2025-06-30 16:20:35
+#
+year,HN,LN,LS,HS,Global
+2006,,7.210,,6.350,
+2007,8.408,7.945,7.171,6.891,7.604
+2008,9.654,9.020,8.207,7.944,8.706
+2009,10.798,10.277,9.281,9.009,9.841
+2010,11.880,11.337,10.323,10.023,10.891
+2011,13.091,12.538,11.534,11.227,12.098
+2012,14.422,13.800,12.833,12.475,13.382
+2013,15.796,15.196,14.159,13.722,14.718
+2014,17.274,16.541,15.410,15.028,16.063
+2015,18.624,18.075,17.081,16.421,17.550
+2016,20.198,19.520,18.408,17.964,19.022
+2017,21.931,21.081,20.037,19.539,20.647
+2018,23.445,22.674,21.684,21.206,22.252
+2019,25.109,24.330,23.196,22.749,23.846
+2020,26.523,25.730,24.727,24.254,25.308
+2021,28.226,27.515,26.350,25.903,26.998
+2022,30.274,29.476,28.318,27.810,28.970
+2023,32.001,31.300,29.974,29.400,30.619
+2024,33.829,,31.612,31.130,
