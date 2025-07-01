@@ -94,8 +94,9 @@ class GMLAnnualMeans:
 
         # Adjust weights for specific sites
         df.loc[df['site'] == 'spo', 'lat'] = -65.0
+        # Deweight psa for HFCs and CH2Cl2
         if gas in ['CH2Cl2', 'HFC32', 'HFC125', 'HFC134a', 'HFC143a', 'HFC152a', 
-                   'HFC227ea', 'HFC365mfc', 'HFC236fa']:
+                    'HFC227ea', 'HFC365mfc', 'HFC236fa']:
             df.loc[df['site'] == 'psa', 'lat'] = -80.0
 
         # Define regions based on latitude
@@ -110,27 +111,28 @@ class GMLAnnualMeans:
                 return 'LS'
 
         df['region'] = df['lat'].apply(_bucket)
-        df['w'] = np.cos(np.deg2rad(df['lat']))
 
-        # Calculate weighted means for each region independently
-        weighted_means = {}
-        for region in ['HN', 'LN', 'LS', 'HS']:
-            region_df = df[df['region'] == region]
-            if not region_df.empty:
-                weighted_means[region] = (
-                    region_df.groupby('date')[['mf', 'w']]
-                    .apply(lambda g: np.average(g['mf'], weights=g['w']))
-                )
-            else:
-                weighted_means[region] = pd.Series(dtype=float)
+        # Precompute fixed weights for all sites
+        df['fixed_w'] = np.cos(np.deg2rad(df['lat']))
+        
+        # drop rows with missing mf so the weighted mean calculated
+        df2 = df.dropna(subset=['mf']).copy()
+        
+        # compute weighted mean per (date,region)
+        w = (df2['mf'] * df2['fixed_w']).rename('mf_sum')
+        df2 = df2.assign(mf_sum=w)
 
-        # Combine results into a DataFrame
-        semi_means = pd.DataFrame(weighted_means)
-
+        wm = ( df2
+            .groupby(['date','region'])[['mf', 'mf_sum', 'fixed_w']]
+            .apply(lambda g: g['mf_sum'].sum() / g['fixed_w'].sum())
+            .unstack('region')
+        )
+        
+        # now wm is a DataFrame with columns ['HN','LN','LS','HS']
         # Calculate Global mean using only valid values from all four regions
-        semi_means['Global'] = semi_means[['HN', 'LN', 'LS', 'HS']].mean(axis=1, skipna=False)
+        wm['Global'] = wm[['HN', 'LN', 'LS', 'HS']].mean(axis=1, skipna=False)
 
-        return semi_means
+        return wm
 
     def annual_means(self, gas, end_year=None, save_file=False):
         """
@@ -165,13 +167,19 @@ class GMLAnnualMeans:
             return None
 
         if program == 'combined':
+            # The gap between otto and fe3 in the fECD data is not accounted for
+            # in the Igor Pro combined data code. Interpolate here.
+            df_numeric = df.apply(pd.to_numeric, errors='coerce')
+            df = df_numeric.interpolate(method='time', limit_area='inside')
             df = self.refactor_combo_df(df)
         else:
             df.reset_index(inplace=True)
 
+        # background sites used for a given gas
         bksites = self.bk_overrides.get(gas, self.default_bk_sites)
         means = self.semi_hemispheric_means(df, gas, sites_included=bksites)
 
+        # exclude the current year (data is not fully QCed)
         if end_year is None:
             end_year = pd.Timestamp.now().year - 1
         else:
@@ -195,13 +203,12 @@ class GMLAnnualMeans:
                 hdr = self.get_file_header(gas)
                 with open(out_file, "w") as fh:
                     fh.write(hdr)
-                    #valid = df_yearly.min(axis=1) >= 12
-                    #df_yearly = df_yearly.loc[valid]
                     df_yearly.to_csv(
                         fh,
                         float_format="%.3f",
                         date_format="%Y",
-                        index_label="year"
+                        index_label="year",
+                        na_rep='NaN'
                     )
             print(f"Annual means for {gas} calculated and saved.")
 

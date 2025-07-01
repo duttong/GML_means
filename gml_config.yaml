@@ -1,6 +1,4 @@
 # gases for the Ozone assessment
-gases_: [CFC11, HFC125]
-
 gases: [
   CFC11, CFC12, CFC113,
   CH3CCl3, CCl4,

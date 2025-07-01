@@ -21,10 +21,10 @@
 #   https://gml.noaa.gov/hats/data.html
 #
 # Data file: HFC152a_annual_means.csv
-# Generated on: 2025-06-30 16:20:37
+# Generated on: 2025-07-01 15:37:27
 #
 year,HN,LN,LS,HS,Global
-1999,,,,0.939,
+1999,NaN,NaN,NaN,0.939,NaN
 2000,2.639,2.044,1.227,1.095,1.755
 2001,4.052,2.374,1.389,1.224,2.259
 2002,4.107,2.879,1.617,1.441,2.511

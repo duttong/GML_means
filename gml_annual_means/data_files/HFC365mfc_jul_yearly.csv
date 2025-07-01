@@ -21,10 +21,10 @@
 #   https://gml.noaa.gov/hats/data.html
 #
 # Data file: HFC365mfc_annual_means.csv
-# Generated on: 2025-06-30 16:20:41
+# Generated on: 2025-07-01 15:37:31
 #
 year,HN,LN,LS,HS,Global
-2008,0.569,,,0.407,
+2008,0.569,NaN,NaN,0.407,NaN
 2009,0.567,0.527,0.433,0.421,0.488
 2010,0.619,0.572,0.471,0.456,0.529
 2011,0.686,0.637,0.523,0.507,0.588
