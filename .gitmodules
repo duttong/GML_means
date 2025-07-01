@@ -1,0 +1,2 @@
+[submodule "NOAA_halocarbons_loader"]
+	url = git@github.com:duttong/NOAA_halocarbons_loader.git
