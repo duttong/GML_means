@@ -26,14 +26,14 @@ background_sites: [alt, sum, brw, cgo, kum, mhd, mlo, mlo_pfp, nwr, thd, rpb, sm
 # for HFCs and CH2Cl2 don't use mhd
 gas_background_overrides:
   CH2Cl2: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
-  HFC32: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
-  HFC125: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC32: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, smo, ush, psa, spo]
+  HFC125: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, smo, ush, psa, spo]
   HFC134a: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
-  HFC143a: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC143a: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, smo, ush, psa, spo]
   HFC152a: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
   HFC227ea: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
   HFC365mfc: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
-  HFC286fa: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
+  HFC286fa: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, smo, ush, psa, spo]
 
 # Headers or meta data for annual mean data files
 annual_means_file_header: |
