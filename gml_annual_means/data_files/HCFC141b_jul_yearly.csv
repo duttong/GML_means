@@ -21,7 +21,7 @@
 #   https://gml.noaa.gov/hats/data.html
 #
 # Data file: HCFC141b_annual_means.csv
-# Generated on: 2025-07-07 13:16:29
+# Generated on: 2025-07-09 16:04:25
 #
 year,HN,LN,LS,HS,Global
 1992,1.032,0.594,0.436,0.318,0.627

@@ -21,7 +21,7 @@
 #   https://gml.noaa.gov/hats/data.html
 #
 # Data file: HFC227ea_annual_means.csv
-# Generated on: 2025-07-07 13:16:53
+# Generated on: 2025-07-09 16:04:49
 #
 year,HN,LN,LS,HS,Global
 2010,NaN,NaN,NaN,0.595,NaN
