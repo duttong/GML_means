@@ -8,7 +8,11 @@ from pathlib import Path
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 
-sys.path.append('NOAA_halocarbons_loader')
+here = Path.cwd()
+loader_path = (here / "NOAA_halocarbons_loader").resolve()
+sys.path.insert(0, str(loader_path.parent))  # Add parent directory of oa2026
+
+#sys.path.append('NOAA_halocarbons_loader')
 import NOAA_halocarbons_loader.halocarbons_loader as halocarbons_loader
 
 
@@ -185,13 +189,25 @@ class GMLAnnualMeans:
         else:
             end_year = int(end_year)
         means = means.loc[means.index.year <= end_year]
+        
+        def strick_annual_mean(df, month):
+            """ Compute annual mean centered on month.
+                This function is used to compute the annual mean for January (JAN) and July (JUL).
+                It returns data for the full year, but only if all 12 months are present.
+            """ 
+            res = means.resample(f'YS-{month}', label='left', closed='left')
+            # compute the annual mean and the count of valid months
+            annual_mean  = res.mean()
+            month_counts = res.count()
+            complete_mask = month_counts.eq(12).all(axis=1)
+            annual_strict = annual_mean.where(complete_mask)
+            annual_strict.index = annual_strict.index + pd.DateOffset(months=6)  # shift index to center on the month
 
-        jan_mean = means.resample('YS-JAN', label='left', closed='left').mean()
-        jul_mean = means.resample('YS-JUL', label='left', closed='left').mean()
+            col_order = ['HN', 'LN', 'LS', 'HS', 'Global']
+            return annual_strict[col_order]
 
-        col_order = ['HN', 'LN', 'LS', 'HS', 'Global']
-        jan_mean = jan_mean[col_order]
-        jul_mean = jul_mean[col_order]
+        jan_mean = strick_annual_mean(means, 'JUL')
+        jul_mean = strick_annual_mean(means, 'JAN')
         
         if save_file:
             save_dir = Path("gml_annual_means/data_files")
@@ -212,7 +228,8 @@ class GMLAnnualMeans:
                     )
             print(f"Annual means for {gas} calculated and saved.")
 
-        return df, jan_mean
+        # return raw and annual means centered on July
+        return df, jul_mean
 
     def annual_means_figure(self, gas, raw, annual):
         fig, ax = plt.subplots()
@@ -258,9 +275,9 @@ class GMLAnnualMeans:
     def main(self):
         dfs = []
         for gas in self.gases:
-            raw, jan = self.annual_means(gas, save_file=True)
-            if jan is not None and "Global" in jan.columns:
-                s = jan["Global"].copy()
+            raw, jul = self.annual_means(gas, save_file=True)
+            if jul is not None and "Global" in jul.columns:
+                s = jul["Global"].copy()
                 s.name = gas
                 dfs.append(s)
 
@@ -268,18 +285,14 @@ class GMLAnnualMeans:
             print("No data found for any gases.")
             return
 
-        all_jan = pd.concat(dfs, axis=1)
-        mid_years = all_jan.index.year + 0.5
-        all_jan.index = mid_years
-        all_jan.index.name = "year"
-        all_jan.index = all_jan.index.map(lambda y: f"{y:.1f}")
+        all_jul = pd.concat(dfs, axis=1)
 
         out_file = "gml_annual_means/GML_annual_means.csv"
         now = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
         hdr = self.gml_header_tpl.format(generated_on=now)
         with open(out_file, "w") as fh:
             fh.write(hdr)
-            all_jan.to_csv(
+            all_jul.to_csv(
                 fh,
                 float_format="%.3f",
                 na_rep="NaN",
