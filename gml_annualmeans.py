@@ -8,9 +8,23 @@ from pathlib import Path
 from matplotlib import pyplot as plt
 from matplotlib.lines import Line2D
 
-here = Path.cwd()
+here = Path(__file__).resolve().parent
 loader_path = (here / "NOAA_halocarbons_loader").resolve()
-sys.path.insert(0, str(loader_path.parent))  # Add parent directory of oa2026
+
+if not loader_path.is_dir():
+    raise FileNotFoundError(
+        f"Expected NOAA_halocarbons_loader at {loader_path}. "
+        "Clone https://github.com/duttong/NOAA_halocarbons_loader into the "
+        "top level of this repository."
+    )
+
+# Support the documented clone layout regardless of the current working directory.
+# The loader package imports some helper modules as top-level modules, so both the
+# project root and the loader directory itself need to be importable.
+for path in (here, loader_path):
+    path_str = str(path)
+    if path_str not in sys.path:
+        sys.path.insert(0, path_str)
 
 #sys.path.append('NOAA_halocarbons_loader')
 import NOAA_halocarbons_loader.halocarbons_loader as halocarbons_loader
