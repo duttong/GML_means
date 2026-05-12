@@ -1,5 +1,6 @@
 #! /usr/bin/env python
 
+import argparse
 import pandas as pd
 import numpy as np
 import yaml
@@ -26,7 +27,6 @@ for path in (here, loader_path):
     if path_str not in sys.path:
         sys.path.insert(0, path_str)
 
-#sys.path.append('NOAA_halocarbons_loader')
 import NOAA_halocarbons_loader.halocarbons_loader as halocarbons_loader
 
 
@@ -59,7 +59,7 @@ class GMLAnnualMeans:
         df2 = df2.reset_index()
 
         to_drop = ['NH', 'NH_sd', 'SH', 'SH_sd', 'Global', 'Global_sd', 'Programs']
-        df2 = df2.drop(columns=to_drop)
+        df2 = df2.drop(columns=to_drop, errors='ignore')
 
         mf_cols = [c for c in df2.columns if not c.endswith('_sd') and c != 'date']
         sd_cols = [f"{c}_sd" for c in mf_cols]
@@ -100,9 +100,22 @@ class GMLAnnualMeans:
         Returns
         -------
         semi_means : pandas.DataFrame
-            Index = date  
-            Columns = ['HN','LN','LS','HS','Global']  
+            Index = date
+            Columns = ['HN','LN','LS','HS','Global']
             Values = weighted mean of mf for each region, and Global = mean of the four.
+
+        Notes
+        -----
+        Latitudes for two stations are overridden before the cos(lat) weights
+        are computed (Steve's method):
+          - SPO (true lat ~ -90) is moved to -65 so it doesn't carry near-zero
+            weight in the high-southern band; without this it would
+            effectively drop out of the HS average.
+          - PSA (true lat ~ -64) is moved to -80 for selected short-lived /
+            interhemispherically uneven gases (CH2Cl2 and most HFCs), so that
+            its NH-leaning signal doesn't dominate the HS band.
+        These mutations only affect the weighting; the underlying data are
+        untouched in the caller's frame because we operate on a copy.
         """
         df = df.copy()
         df.reset_index(inplace=True)
@@ -110,10 +123,8 @@ class GMLAnnualMeans:
         if sites_included is not None:
             df = df[df['site'].isin(sites_included)]
 
-        # Adjust weights for specific sites
         df.loc[df['site'] == 'spo', 'lat'] = -65.0
-        # Deweight psa for HFCs and CH2Cl2
-        if gas in ['CH2Cl2', 'HFC32', 'HFC125', 'HFC134a', 'HFC143a', 'HFC152a', 
+        if gas in ['CH2Cl2', 'HFC32', 'HFC125', 'HFC134a', 'HFC143a', 'HFC152a',
                     'HFC227ea', 'HFC365mfc', 'HFC236fa']:
             df.loc[df['site'] == 'psa', 'lat'] = -80.0
 
@@ -180,9 +191,10 @@ class GMLAnnualMeans:
         
         program = 'combined' if gas in self.combo_gases else 'msd'
         df = self.gml.loader(gas, program=program, gapfill=True)
-        if df.empty:
+        # loader() returns None when no data; an empty DataFrame is also possible.
+        if df is None or df.empty:
             print(f"No data found for {gas}.")
-            return None
+            return None, None
 
         if program == 'combined':
             # The gap between otto and fe3 in the fECD data is not accounted for
@@ -204,28 +216,26 @@ class GMLAnnualMeans:
             end_year = int(end_year)
         means = means.loc[means.index.year <= end_year]
         
-        def strick_annual_mean(df, month):
+        def strict_annual_mean(df, month):
             """ Compute annual mean centered on month.
                 This function is used to compute the annual mean for January (JAN) and July (JUL).
                 It returns data for the full year, but only if all 12 months are present.
-            """ 
-            res = means.resample(f'YS-{month}', label='left', closed='left')
-            # compute the annual mean and the count of valid months
-            annual_mean  = res.mean()
+            """
+            res = df.resample(f'YS-{month}', label='left', closed='left')
+            annual_mean = res.mean()
             month_counts = res.count()
             complete_mask = month_counts.eq(12).all(axis=1)
             annual_strict = annual_mean.where(complete_mask)
-            annual_strict.index = annual_strict.index + pd.DateOffset(months=6)  # shift index to center on the month
 
             col_order = ['HN', 'LN', 'LS', 'HS', 'Global']
             return annual_strict[col_order]
 
-        jan_mean = strick_annual_mean(means, 'JUL')
-        jul_mean = strick_annual_mean(means, 'JAN')
+        jul_mean = strict_annual_mean(means, 'JUL')   # July 1 to Jun 30 the following year
+        jan_mean = strict_annual_mean(means, 'JAN')   # Jan 1 to Dec 31
         
         if save_file:
-            save_dir = Path("gml_annual_means/data_files")
-            save_dir.mkdir(exist_ok=True)
+            save_dir = here / "gml_annual_means" / "data_files"
+            save_dir.mkdir(parents=True, exist_ok=True)
             self.annual_means_figure(gas, df, jan_mean)
 
             for period, df_yearly in [("jan", jan_mean), ("jul", jul_mean)]:
@@ -255,13 +265,13 @@ class GMLAnnualMeans:
         for site in raw['site'].unique():
             if site not in bksites:
                 continue
-            sd = raw[raw['site'] == site]
-            sd = sd[sd['date'] <= today]    # trim off forcast data
-            ax.plot(sd['date'], sd['mf'], color='0.7', alpha=0.7, label='_nolegend_')
+            site_data = raw[raw['site'] == site]
+            site_data = site_data[site_data['date'] <= today]    # trim off forcast data
+            ax.plot(site_data['date'], site_data['mf'], color='0.7', alpha=0.7, label='_nolegend_')
 
         bg_proxy = Line2D([0], [0], color='0.7', alpha=0.7, linewidth=1)
 
-        x = annual.index + pd.DateOffset(months=6)
+        x = annual.index #+ pd.DateOffset(months=6)
         mean_handles = []
         for col in annual.columns:
             if col == 'Global':
@@ -274,8 +284,8 @@ class GMLAnnualMeans:
         ax.set_xlabel('Year')
         ax.set_ylabel(f'{gas} mole fraction (ppt)')
 
-        save_dir = Path("gml_annual_means/figures")
-        save_dir.mkdir(exist_ok=True)
+        save_dir = here / "gml_annual_means" / "figures"
+        save_dir.mkdir(parents=True, exist_ok=True)
 
         out_png = save_dir / f"{gas}_annual_means.png"
         print(f"Saving annual means figure for {gas} to {out_png}")
@@ -301,7 +311,8 @@ class GMLAnnualMeans:
 
         all_jul = pd.concat(dfs, axis=1)
 
-        out_file = "gml_annual_means/GML_annual_means.csv"
+        out_file = here / "gml_annual_means" / "GML_annual_means.csv"
+        out_file.parent.mkdir(parents=True, exist_ok=True)
         now = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
         hdr = self.gml_header_tpl.format(generated_on=now)
         with open(out_file, "w") as fh:
@@ -317,5 +328,18 @@ class GMLAnnualMeans:
 
 
 if __name__ == '__main__':
+    parser = argparse.ArgumentParser(
+        description='Compute NOAA/GML annual means. With no gas, iterate '
+                    'over every gas listed in gml_config.yaml.',
+    )
+    parser.add_argument('gas', nargs='?',
+                        help='Single gas to process; skips the config list. '
+                             'Per-gas CSVs and a figure are still written, but '
+                             'the combined GML_annual_means.csv is not updated.')
+    args = parser.parse_args()
+
     gml_annual_means = GMLAnnualMeans()
-    gml_annual_means.main()
+    if args.gas:
+        gml_annual_means.annual_means(args.gas, save_file=True)
+    else:
+        gml_annual_means.main()

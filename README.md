@@ -72,8 +72,13 @@ GML_means/
 Once that repository is present, run:
 
 ```bash
-python gml_annualmeans.py
+./gml_annualmeans.py              # full run: every gas listed in gml_config.yaml
+./gml_annualmeans.py HFC236fa     # single-gas shortcut: skips the config list
 ```
+
+The script can be invoked from any directory; all output paths are resolved relative to this repository, not the current working directory.
+
+The single-gas shortcut writes the per-gas CSVs and figure for just that gas. It does <em>not</em> touch <strong>GML_annual_means.csv</strong>, since that file is a snapshot of the full config list — partially overwriting it from a single-gas call would corrupt that semantic. Use the full run to regenerate it.
 
 ## Configuration
 
