@@ -16,7 +16,7 @@ This repository:
 - HS corresponds to latitudes less than or equal to -30
 - calculates the global mean as the average of the four semi-hemispheric means
 - writes per-gas annual mean CSV files
-- writes a combined <strong>GML_annual_means.csv</strong> file containing the July-centered global means for all configured gases
+- writes a combined <strong>GML_annual_means.csv</strong> file containing the July-start global means for all configured gases
 - creates figures for each gas in <strong>gml_annual_means/figures</strong>
 
 ## Data sources and processing
@@ -28,12 +28,12 @@ The code uses two NOAA/GML source groupings defined in <strong>gml_config.yaml</
 
 For combined products, the code reshapes the downloaded data to match the site-based structure used in the rest of the processing. Annual means are computed from monthly values and only retained when all 12 months are present in a yearly window.
 
-Two annual-mean windows are generated for each gas:
+Two annual-mean windows are generated for each gas. The label refers to the <em>starting month</em> of the averaging window, not its center:
 
-- <strong>jan</strong>: January-centered annual means
-- <strong>jul</strong>: July-centered annual means
+- <strong>jan</strong>: January-start annual means (Jan 1 to Dec 31 — a calendar year)
+- <strong>jul</strong>: July-start annual means (July 1 of year Y to June 30 of year Y+1, labeled with year Y)
 
-The combined <strong>GML_annual_means.csv</strong> file is built from the July-centered global means.
+The combined <strong>GML_annual_means.csv</strong> file is built from the July-start global means.
 
 ## Repository layout
 
