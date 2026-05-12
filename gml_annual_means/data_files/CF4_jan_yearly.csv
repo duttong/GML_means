@@ -1,0 +1,38 @@
+# Annual means for CF4
+# Calculated from NOAA/GML data.
+# Flask pair means, in situ hourly data, and monthly means available through GML's website.
+# https://gml.noaa.gov/hats/data.html
+#
+# Contact:
+#   Stephen Montzka: Stephen.Montzka@noaa.gov
+#   Isaac Vimont: Isaac.Vimont@noaa.gov
+#   Geoff Dutton: Geoff.Dutton@noaa.gov
+#
+# Semi-hemispheric means:
+#   HN: lat ≥ 30°N
+#   LN: 0° ≤ lat < 30°N
+#   LS: −30° < lat < 0°
+#   HS: lat ≤ −30°N
+# Global mean: average of the four semi-hemispheric means
+# Data format:
+#   year, HN, LN, LS, HS, Global
+#
+# Data source: NOAA Global Monitoring Laboratory
+#   https://gml.noaa.gov/hats/data.html
+#
+# Data file: CF4_annual_means.csv
+# Generated on: 2026-05-12 12:10:22
+#
+year,HN,LN,LS,HS,Global
+2014,NaN,NaN,NaN,NaN,NaN
+2015,82.586,82.433,81.771,81.581,82.093
+2016,83.375,83.249,82.588,82.309,82.880
+2017,84.365,84.103,83.477,83.103,83.762
+2018,85.191,84.949,84.311,83.931,84.595
+2019,86.122,85.878,85.139,84.847,85.497
+2020,87.039,86.745,86.072,85.804,86.415
+2021,88.003,87.804,86.954,86.628,87.347
+2022,88.878,88.594,87.809,87.490,88.193
+2023,90.053,89.529,88.696,88.435,89.178
+2024,90.983,90.661,89.771,89.668,90.271
+2025,91.946,91.738,90.919,90.642,91.311

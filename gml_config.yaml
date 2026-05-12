@@ -1,22 +1,24 @@
 # gases for the Ozone assessment
 gases: [
-  CFC11, CFC12, CFC113,
+  CFC11, CFC12, CFC113, CFC115,
   CH3CCl3, CCl4, C2Cl4, CH2Cl2,
-  HCFC22, HCFC141b, HCFC142b,
+  HCFC22, HCFC141b, HCFC142b, HCFC124, HCFC133a,
   H1211, H1301, H2402,
   CH3Br, CH3Cl,
-  HFC32, HFC125, HFC134a, HFC143a, HFC152a, HFC227ea, HFC365mfc, HFC236fa
+  HFC32, HFC125, HFC134a, HFC143a, HFC152a, HFC227ea, HFC365mfc, HFC236fa,
+  COS, CF4, PFC116, SF6
 ]
-gases_not_included: [CFC13, CFC112, CFC113a, CFC114, CFC115, H1202]
+gases_not_included: [CFC13, CFC112, CFC113a, CFC114, H1202]
 
 # Use either 'combined' (ECD and MSD) or 'msd' data files from GML ftp/website.
 data_source:
-  combined: [CFC11, CFC12, CFC113, CCl4]
+  combined: [CFC11, CFC12, CFC113, CCl4, SF6]
   msd: [
-    HCFC22, HCFC141b, HCFC142b,
+    HCFC22, HCFC141b, HCFC142b, HCFC124, HCFC133a,
     H1211, H1301, H2402,
     CFC112, CFC113a, CFC114, CFC115,
-    CH3Br, CH3Cl, CH3CCl3
+    CH3Br, CH3Cl, CH3CCl3,
+    COS, CF4
   ]
 
 # Background sites used for all gas

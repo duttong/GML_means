@@ -1,0 +1,38 @@
+# Annual means for PFC116
+# Calculated from NOAA/GML data.
+# Flask pair means, in situ hourly data, and monthly means available through GML's website.
+# https://gml.noaa.gov/hats/data.html
+#
+# Contact:
+#   Stephen Montzka: Stephen.Montzka@noaa.gov
+#   Isaac Vimont: Isaac.Vimont@noaa.gov
+#   Geoff Dutton: Geoff.Dutton@noaa.gov
+#
+# Semi-hemispheric means:
+#   HN: lat ≥ 30°N
+#   LN: 0° ≤ lat < 30°N
+#   LS: −30° < lat < 0°
+#   HS: lat ≤ −30°N
+# Global mean: average of the four semi-hemispheric means
+# Data format:
+#   year, HN, LN, LS, HS, Global
+#
+# Data source: NOAA Global Monitoring Laboratory
+#   https://gml.noaa.gov/hats/data.html
+#
+# Data file: PFC116_annual_means.csv
+# Generated on: 2026-05-12 12:10:24
+#
+year,HN,LN,LS,HS,Global
+2014,NaN,NaN,NaN,NaN,NaN
+2015,NaN,NaN,NaN,NaN,NaN
+2016,4.646,4.628,4.554,4.556,4.596
+2017,4.736,4.698,4.649,4.656,4.685
+2018,4.851,4.820,4.797,4.760,4.807
+2019,4.889,4.868,4.811,4.801,4.842
+2020,5.008,4.987,4.915,4.896,4.951
+2021,5.059,5.039,4.982,4.952,5.008
+2022,5.124,5.098,5.051,5.061,5.083
+2023,NaN,NaN,NaN,NaN,NaN
+2024,NaN,NaN,NaN,NaN,NaN
+2025,NaN,NaN,NaN,NaN,NaN
