@@ -1,24 +1,25 @@
 # gases for the Ozone assessment
 gases: [
-  CFC11, CFC12, CFC113, CFC115,
+  CFC11, CFC12, CFC113,
   CH3CCl3, CCl4, C2Cl4, CH2Cl2,
-  HCFC22, HCFC141b, HCFC142b, HCFC124, HCFC133a,
+  HCFC22, HCFC141b, HCFC142b,
   H1211, H1301, H2402,
-  CH3Br, CH3Cl,
-  HFC32, HFC125, HFC134a, HFC143a, HFC152a, HFC227ea, HFC365mfc, HFC236fa,
-  COS, CF4, PFC116, SF6
+  CH3Br, CH3Cl, CFC115,
+  HCFC124,HCFC133a,
+  HFC32, HFC125, HFC134a, 
+  HFC143a, HFC152a, HFC227ea, 
+  HFC365mfc, HFC236fa,CF4,SF6
 ]
-gases_not_included: [CFC13, CFC112, CFC113a, CFC114, H1202]
+gases_not_included: [CFC13, CFC112, CFC113a, CFC114, H1202, HFC23]
 
 # Use either 'combined' (ECD and MSD) or 'msd' data files from GML ftp/website.
 data_source:
   combined: [CFC11, CFC12, CFC113, CCl4, SF6]
   msd: [
-    HCFC22, HCFC141b, HCFC142b, HCFC124, HCFC133a,
+    HCFC22, HCFC141b, HCFC142b,
     H1211, H1301, H2402,
     CFC112, CFC113a, CFC114, CFC115,
-    CH3Br, CH3Cl, CH3CCl3,
-    COS, CF4
+    CH3Br, CH3Cl, CH3CCl3
   ]
 
 # Background sites used for all gas
@@ -26,6 +27,7 @@ background_sites: [alt, sum, brw, cgo, kum, mhd, mlo, mlo_pfp, nwr, thd, rpb, sm
 
 # Override background sites for specific gases
 # for HFCs and CH2Cl2 don't use mhd
+# For HFC236fa, we don't use SPO due to all data being tagged for contamination
 gas_background_overrides:
   CH2Cl2: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
   HFC32: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, smo, ush, psa, spo]
@@ -35,7 +37,7 @@ gas_background_overrides:
   HFC152a: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
   HFC227ea: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
   HFC365mfc: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, rpb, smo, ush, psa, spo]
-  HFC286fa: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, smo, ush, psa, spo]
+  HFC236fa: [alt, sum, brw, cgo, kum, mlo, mlo_pfp, nwr, thd, smo, ush, psa]
 
 # Headers or meta data for annual mean data files
 annual_means_file_header: |
