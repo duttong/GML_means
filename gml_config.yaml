@@ -5,12 +5,12 @@ gases: [
   HCFC22, HCFC141b, HCFC142b,
   H1211, H1301, H2402,
   CH3Br, CH3Cl, CFC115,
-  HCFC124,HCFC133a,
-  HFC32, HFC125, HFC134a, 
+  HCFC124, HCFC133a, CFC13,
+  HFC32, HFC125, HFC134a, CH2ClCH2Cl,
   HFC143a, HFC152a, HFC227ea, 
-  HFC365mfc, HFC236fa,CF4,SF6
+  HFC365mfc, HFC236fa, CF4, SF6
 ]
-gases_not_included: [CFC13, CFC112, CFC113a, CFC114, H1202, HFC23]
+gases_not_included: [CFC112, CFC113a, CFC114, H1202, HFC23]
 
 # Use either 'combined' (ECD and MSD) or 'msd' data files from GML ftp/website.
 data_source:
