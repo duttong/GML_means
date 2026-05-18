@@ -1,4 +1,4 @@
-# Annual means for PFC116
+# Annual means for CFC13
 # Calculated from NOAA/GML data.
 # Flask pair means, in situ hourly data, and monthly means available through GML's website.
 # https://gml.noaa.gov/hats/data.html
@@ -20,18 +20,19 @@
 # Data source: NOAA Global Monitoring Laboratory
 #   https://gml.noaa.gov/hats/data.html
 #
-# Data file: PFC116_annual_means.csv
-# Generated on: 2026-05-12 12:10:24
+# Data file: CFC13_annual_means.csv
+# Generated on: 2026-05-18 11:06:07
 #
 year,HN,LN,LS,HS,Global
+2014,NaN,NaN,NaN,NaN,NaN
 2015,NaN,NaN,NaN,NaN,NaN
-2016,4.625,4.610,4.514,4.507,4.564
-2017,4.691,4.663,4.600,4.617,4.643
-2018,4.785,4.739,4.729,4.695,4.737
-2019,4.879,4.862,4.799,4.779,4.830
-2020,4.950,4.919,4.869,4.862,4.900
-2021,5.030,5.022,4.945,4.918,4.979
-2022,5.085,5.065,5.008,4.996,5.038
-2023,NaN,NaN,NaN,NaN,NaN
-2024,NaN,NaN,NaN,NaN,NaN
-2025,NaN,NaN,NaN,NaN,NaN
+2016,3.348,3.358,3.310,3.374,3.347
+2017,3.374,3.365,3.334,3.405,3.369
+2018,3.406,3.394,3.383,3.437,3.405
+2019,3.446,3.435,3.399,3.463,3.436
+2020,3.457,3.443,3.412,3.461,3.443
+2021,3.477,3.469,3.450,3.487,3.471
+2022,3.510,3.502,3.483,3.512,3.502
+2023,3.529,3.529,3.509,3.514,3.520
+2024,3.539,3.529,3.500,3.514,3.520
+2025,3.559,3.541,3.519,3.537,3.539

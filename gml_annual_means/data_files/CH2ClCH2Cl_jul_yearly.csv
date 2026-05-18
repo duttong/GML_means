@@ -1,4 +1,4 @@
-# Annual means for PFC116
+# Annual means for CH2ClCH2Cl
 # Calculated from NOAA/GML data.
 # Flask pair means, in situ hourly data, and monthly means available through GML's website.
 # https://gml.noaa.gov/hats/data.html
@@ -20,19 +20,17 @@
 # Data source: NOAA Global Monitoring Laboratory
 #   https://gml.noaa.gov/hats/data.html
 #
-# Data file: PFC116_annual_means.csv
-# Generated on: 2026-05-12 12:10:24
+# Data file: CH2ClCH2Cl_annual_means.csv
+# Generated on: 2026-05-18 11:06:22
 #
 year,HN,LN,LS,HS,Global
-2014,NaN,NaN,NaN,NaN,NaN
-2015,NaN,NaN,NaN,NaN,NaN
-2016,4.646,4.628,4.554,4.556,4.596
-2017,4.736,4.698,4.649,4.656,4.685
-2018,4.851,4.820,4.797,4.760,4.807
-2019,4.889,4.868,4.811,4.801,4.842
-2020,5.008,4.987,4.915,4.896,4.951
-2021,5.059,5.039,4.982,4.952,5.008
-2022,5.124,5.098,5.051,5.061,5.083
-2023,NaN,NaN,NaN,NaN,NaN
-2024,NaN,NaN,NaN,NaN,NaN
+2016,NaN,NaN,NaN,NaN,NaN
+2017,15.283,12.542,2.827,1.615,8.067
+2018,18.274,15.963,2.831,1.945,9.753
+2019,15.669,12.909,2.514,1.843,8.234
+2020,15.494,12.163,2.629,1.765,8.013
+2021,12.897,9.705,2.264,1.711,6.644
+2022,13.974,11.133,2.299,1.656,7.266
+2023,15.539,13.206,2.376,1.741,8.215
+2024,14.988,11.960,2.547,1.873,7.842
 2025,NaN,NaN,NaN,NaN,NaN

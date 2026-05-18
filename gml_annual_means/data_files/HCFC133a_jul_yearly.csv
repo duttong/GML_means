@@ -21,12 +21,12 @@
 #   https://gml.noaa.gov/hats/data.html
 #
 # Data file: HCFC133a_annual_means.csv
-# Generated on: 2026-05-12 12:09:50
+# Generated on: 2026-05-18 11:06:03
 #
 year,HN,LN,LS,HS,Global
 2013,NaN,NaN,NaN,NaN,NaN
 2014,NaN,NaN,NaN,NaN,NaN
-2015,0.518,0.506,0.405,0.395,0.456
+2015,0.518,0.506,0.405,0.394,0.456
 2016,0.540,0.518,0.433,0.415,0.477
 2017,0.539,0.510,0.441,0.425,0.479
 2018,0.526,0.511,0.440,0.429,0.477
