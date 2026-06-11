@@ -14,11 +14,11 @@ gases_not_included: [CFC112, CFC113a, CFC114, H1202, HFC23]
 
 # Use either 'combined' (ECD and MSD) or 'msd' data files from GML ftp/website.
 data_source:
-  combined: [CFC11, CFC12, CCl4, SF6]
+  combined: [CFC11, CFC12, CFC113, CCl4, SF6]
   msd: [
     HCFC22, HCFC141b, HCFC142b,
     H1211, H1301, H2402,
-    CFC112, CFC113, CFC113a, CFC114, CFC115,
+    CFC112, CFC113a, CFC114, CFC115,
     CH3Br, CH3Cl, CH3CCl3
   ]
 
