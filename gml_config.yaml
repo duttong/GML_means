@@ -8,7 +8,8 @@ gases: [
   HCFC124, HCFC133a, CFC13,
   HFC32, HFC125, HFC134a, CH2ClCH2Cl,
   HFC143a, HFC152a, HFC227ea, 
-  HFC365mfc, HFC236fa, CF4, SF6
+  HFC365mfc, HFC236fa, CF4, SF6,
+  COS
 ]
 gases_not_included: [CFC112, CFC113a, CFC114, H1202, HFC23]
 
@@ -46,6 +47,8 @@ annual_means_file_header: |
   # Flask pair means, in situ hourly data, and monthly means available through GML's website.
   # https://gml.noaa.gov/hats/data.html
   #
+  # Annual means computed from {aggregation_range}.
+  #
   # Contact:
   #   Stephen Montzka: Stephen.Montzka@noaa.gov
   #   Isaac Vimont: Isaac.Vimont@noaa.gov
@@ -67,11 +70,13 @@ annual_means_file_header: |
   # Generated on: {generated_on}
   #
 
-# header for the GML file that contains all species (GML_annual_means.csv)
+# header for the GML combined files (GML_jan/jul_annual_means.csv)
 GML_means_file_header: |
   # Calculated global means from NOAA/GML data.
   # Flask pair means, in situ hourly data, and monthly means available through GML's website.
   # https://gml.noaa.gov/hats/data.html
+  #
+  # Annual means computed from {aggregation_range}.
   #
   # Contact:
   #   Stephen Montzka: Stephen.Montzka@noaa.gov

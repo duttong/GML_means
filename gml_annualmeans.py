@@ -238,9 +238,15 @@ class GMLAnnualMeans:
             save_dir.mkdir(parents=True, exist_ok=True)
             self.annual_means_figure(gas, df, jan_mean)
 
-            for period, df_yearly in [("jan", jan_mean), ("jul", jul_mean)]:
+            for period, df_yearly, agg_range in [
+                ("jul", jan_mean, "Jan 1 to Dec 31"),
+                ("jan", jul_mean, "Jul 1 to Jun 30 (of the following year)"),
+            ]:
                 out_file = save_dir / f"{gas}_{period}_yearly.csv"
-                hdr = self.get_file_header(gas)
+                hdr = self.get_file_header(gas, agg_range)
+                if period == "jan":
+                    df_yearly = df_yearly.copy()
+                    df_yearly.index = df_yearly.index + pd.DateOffset(years=1)
                 with open(out_file, "w") as fh:
                     fh.write(hdr)
                     df_yearly.to_csv(
@@ -252,8 +258,8 @@ class GMLAnnualMeans:
                     )
             print(f"Annual means for {gas} calculated and saved.")
 
-        # return raw and annual means centered on July
-        return df, jul_mean
+        # return raw, jul-centered (Jul–Jun), and jan-centered (Jan–Dec) annual means
+        return df, jul_mean, jan_mean
 
     def annual_means_figure(self, gas, raw, annual):
         fig, ax = plt.subplots()
@@ -292,39 +298,52 @@ class GMLAnnualMeans:
         fig.savefig(out_png, dpi=300, bbox_inches='tight')
         plt.close(fig)
 
-    def get_file_header(self, gas):
+    def get_file_header(self, gas, aggregation_range):
         now = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
-        return self.header_tpl.format(gas=gas, generated_on=now)
+        return self.header_tpl.format(gas=gas, generated_on=now, aggregation_range=aggregation_range)
 
     def main(self):
-        dfs = []
+        jul_dfs = []
+        jan_dfs = []
         for gas in self.gases:
-            raw, jul = self.annual_means(gas, save_file=True)
+            raw, jul, jan = self.annual_means(gas, save_file=True)
+            # jul = YS-JUL resample (Jul–Jun, jan-centered) → jan combined file
+            # jan = YS-JAN resample (Jan–Dec, jul-centered) → jul combined file
             if jul is not None and "Global" in jul.columns:
                 s = jul["Global"].copy()
                 s.name = gas
-                dfs.append(s)
+                jan_dfs.append(s)
+            if jan is not None and "Global" in jan.columns:
+                s = jan["Global"].copy()
+                s.name = gas
+                jul_dfs.append(s)
 
-        if not dfs:
+        if not jul_dfs:
             print("No data found for any gases.")
             return
 
-        all_jul = pd.concat(dfs, axis=1)
-
-        out_file = here / "gml_annual_means" / "GML_annual_means.csv"
-        out_file.parent.mkdir(parents=True, exist_ok=True)
+        out_dir = here / "gml_annual_means"
+        out_dir.mkdir(parents=True, exist_ok=True)
         now = pd.Timestamp.now().strftime("%Y-%m-%d %H:%M:%S")
-        hdr = self.gml_header_tpl.format(generated_on=now)
-        with open(out_file, "w") as fh:
-            fh.write(hdr)
-            all_jul.to_csv(
-                fh,
-                float_format="%.3f",
-                na_rep="NaN",
-                index_label="year"
-            )
 
-        print(f"All annual means saved to '{out_file}'")
+        for filename, dfs, agg_range, shift in [
+            ("GML_jul_annual_means.csv", jul_dfs, "Jan 1 to Dec 31", False),
+            ("GML_jan_annual_means.csv", jan_dfs, "Jul 1 to Jun 30 (of the following year)", True),
+        ]:
+            combined = pd.concat(dfs, axis=1)
+            if shift:
+                combined.index = combined.index + pd.DateOffset(years=1)
+            hdr = self.gml_header_tpl.format(generated_on=now, aggregation_range=agg_range)
+            with open(out_dir / filename, "w") as fh:
+                fh.write(hdr)
+                combined.to_csv(
+                    fh,
+                    float_format="%.3f",
+                    na_rep="NaN",
+                    date_format="%Y",
+                    index_label="year"
+                )
+            print(f"Saved '{out_dir / filename}'")
 
 
 if __name__ == '__main__':
@@ -341,5 +360,6 @@ if __name__ == '__main__':
     gml_annual_means = GMLAnnualMeans()
     if args.gas:
         gml_annual_means.annual_means(args.gas, save_file=True)
+        # combined GML files are not updated for single-gas runs
     else:
         gml_annual_means.main()
