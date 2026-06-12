@@ -238,6 +238,11 @@ class GMLAnnualMeans:
             save_dir.mkdir(parents=True, exist_ok=True)
             self.annual_means_figure(gas, df, jan_mean)
 
+            # File naming follows the "centered on" convention, not the resampling start month:
+            #   _jul_ files contain jan_mean (YS-JAN, Jan–Dec), centered on July.
+            #   _jan_ files contain jul_mean (YS-JUL, Jul–Jun), centered on January.
+            # The _jan_ index is also shifted +1 year so the label reflects the central January,
+            # not the July start date (e.g., Jul 2022–Jun 2023 is labeled 2023, not 2022).
             for period, df_yearly, agg_range in [
                 ("jul", jan_mean, "Jan 1 to Dec 31"),
                 ("jan", jul_mean, "Jul 1 to Jun 30 (of the following year)"),
