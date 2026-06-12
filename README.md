@@ -16,7 +16,7 @@ This repository:
 - HS corresponds to latitudes less than or equal to -30
 - calculates the global mean as the average of the four semi-hemispheric means
 - writes per-gas annual mean CSV files
-- writes a combined <strong>GML_annual_means.csv</strong> file containing the July-start global means for all configured gases
+- writes two combined files — <strong>GML_jan_annual_means.csv</strong> and <strong>GML_jul_annual_means.csv</strong> — containing global means for all configured gases
 - creates figures for each gas in <strong>gml_annual_means/figures</strong>
 
 ## Data sources and processing
@@ -28,12 +28,12 @@ The code uses two NOAA/GML source groupings defined in <strong>gml_config.yaml</
 
 For combined products, the code reshapes the downloaded data to match the site-based structure used in the rest of the processing. Annual means are computed from monthly values and only retained when all 12 months are present in a yearly window.
 
-Two annual-mean windows are generated for each gas. The label refers to the <em>starting month</em> of the averaging window, not its center:
+Two annual-mean windows are generated for each gas. The file suffix refers to the <em>center month</em> of the averaging window:
 
-- <strong>jan</strong>: January-start annual means (Jan 1 to Dec 31 — a calendar year)
-- <strong>jul</strong>: July-start annual means (July 1 of year Y to June 30 of year Y+1, labeled with year Y)
+- <strong>jan</strong>: July 1 of year Y−1 to June 30 of year Y, labeled with year Y (January is the center month)
+- <strong>jul</strong>: January 1 to December 31 of year Y, labeled with year Y (July is the center month)
 
-The combined <strong>GML_annual_means.csv</strong> file is built from the July-start global means.
+The combined files <strong>GML_jan_annual_means.csv</strong> and <strong>GML_jul_annual_means.csv</strong> contain the global means for all configured gases in the respective windows.
 
 ## Repository layout
 
@@ -43,7 +43,8 @@ Key files and directories:
 - <strong>gml_config.yaml</strong>: gas list, source mapping, background sites, and output header templates
 - <strong>gml_annual_means/data_files</strong>: per-gas yearly output CSV files
 - <strong>gml_annual_means/figures</strong>: generated figures for each gas
-- <strong>gml_annual_means/GML_annual_means.csv</strong>: combined global annual means file
+- <strong>gml_annual_means/GML_jan_annual_means.csv</strong>: combined global means, Jul–Jun windows
+- <strong>gml_annual_means/GML_jul_annual_means.csv</strong>: combined global means, Jan–Dec windows
 
 The loading of GML data is handled by the code in the <strong>NOAA_halocarbons_loader</strong> repository:
 
@@ -78,7 +79,7 @@ Once that repository is present, run:
 
 The script can be invoked from any directory; all output paths are resolved relative to this repository, not the current working directory.
 
-The single-gas shortcut writes the per-gas CSVs and figure for just that gas. It does <em>not</em> touch <strong>GML_annual_means.csv</strong>, since that file is a snapshot of the full config list — partially overwriting it from a single-gas call would corrupt that semantic. Use the full run to regenerate it.
+The single-gas shortcut writes the per-gas CSVs and figure for just that gas. It does <em>not</em> touch <strong>GML_jan_annual_means.csv</strong> or <strong>GML_jul_annual_means.csv</strong>, since those files are snapshots of the full config list — partially overwriting them from a single-gas call would corrupt that semantic. Use the full run to regenerate them.
 
 ## Configuration
 
@@ -99,7 +100,8 @@ Running <strong>python gml_annualmeans.py</strong> writes results into <strong>g
 - <strong>data_files/{gas}_jan_yearly.csv</strong>
 - <strong>data_files/{gas}_jul_yearly.csv</strong>
 - <strong>figures/{gas}_annual_means.png</strong>
-- <strong>GML_annual_means.csv</strong>
+- <strong>GML_jan_annual_means.csv</strong>
+- <strong>GML_jul_annual_means.csv</strong>
 
 The per-gas CSV files contain:
 
