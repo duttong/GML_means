@@ -230,7 +230,7 @@ class GMLAnnualMeans:
             col_order = ['HN', 'LN', 'LS', 'HS', 'Global']
             return annual_strict[col_order]
 
-        jul_mean = strict_annual_mean(means, 'JUL')   # July 1 to Jun 30 the following year
+        jul_mean = strict_annual_mean(means, 'JUL')   # Jul 1 (previous year) to Jun 30 (current year)
         jan_mean = strict_annual_mean(means, 'JAN')   # Jan 1 to Dec 31
         
         if save_file:
@@ -245,7 +245,7 @@ class GMLAnnualMeans:
             # not the July start date (e.g., Jul 2022–Jun 2023 is labeled 2023, not 2022).
             for period, df_yearly, agg_range in [
                 ("jul", jan_mean, "Jan 1 to Dec 31"),
-                ("jan", jul_mean, "Jul 1 to Jun 30 (of the following year)"),
+                ("jan", jul_mean, "Jul 1 (of the previous year) to Jun 30"),
             ]:
                 out_file = save_dir / f"{gas}_{period}_yearly.csv"
                 hdr = self.get_file_header(gas, agg_range)
@@ -333,7 +333,7 @@ class GMLAnnualMeans:
 
         for filename, dfs, agg_range, shift in [
             ("GML_jul_annual_means.csv", jul_dfs, "Jan 1 to Dec 31", False),
-            ("GML_jan_annual_means.csv", jan_dfs, "Jul 1 to Jun 30 (of the following year)", True),
+            ("GML_jan_annual_means.csv", jan_dfs, "Jul 1 (of the previous year) to Jun 30", True),
         ]:
             combined = pd.concat(dfs, axis=1)
             if shift:
