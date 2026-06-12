@@ -23,7 +23,7 @@
 #   https://gml.noaa.gov/hats/data.html
 #
 # Data file: HFC32_annual_means.csv
-# Generated on: 2026-06-12 10:46:13
+# Generated on: 2026-06-12 11:23:44
 #
 year,HN,LN,LS,HS,Global
 2008,NaN,NaN,NaN,NaN,NaN

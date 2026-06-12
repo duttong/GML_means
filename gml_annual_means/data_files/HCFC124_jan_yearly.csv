@@ -3,7 +3,7 @@
 # Flask pair means, in situ hourly data, and monthly means available through GML's website.
 # https://gml.noaa.gov/hats/data.html
 #
-# Annual means computed from Jul 1 to Jun 30 (of the following year).
+# Annual means computed from Jul 1 (of the previous year) to Jun 30.
 #
 # Contact:
 #   Stephen Montzka: Stephen.Montzka@noaa.gov
@@ -23,7 +23,7 @@
 #   https://gml.noaa.gov/hats/data.html
 #
 # Data file: HCFC124_annual_means.csv
-# Generated on: 2026-06-12 10:46:07
+# Generated on: 2026-06-12 11:23:37
 #
 year,HN,LN,LS,HS,Global
 2014,NaN,NaN,NaN,NaN,NaN
