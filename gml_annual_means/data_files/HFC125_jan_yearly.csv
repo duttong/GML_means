@@ -23,7 +23,7 @@
 #   https://gml.noaa.gov/hats/data.html
 #
 # Data file: HFC125_annual_means.csv
-# Generated on: 2026-06-12 11:23:46
+# Generated on: 2026-06-17 14:12:43
 #
 year,HN,LN,LS,HS,Global
 2007,NaN,NaN,NaN,NaN,NaN
@@ -44,5 +44,5 @@ year,HN,LN,LS,HS,Global
 2022,40.231,38.787,36.029,35.096,37.536
 2023,44.362,42.978,40.014,38.947,41.575
 2024,48.490,46.943,43.744,42.512,45.422
-2025,52.776,50.830,47.954,46.478,49.509
+2025,52.776,50.599,47.954,46.478,49.452
 2026,NaN,NaN,NaN,NaN,NaN

@@ -9,7 +9,7 @@ gases: [
   HFC32, HFC125, HFC134a, CH2ClCH2Cl,
   HFC143a, HFC152a, HFC227ea, 
   HFC365mfc, HFC236fa, CF4, SF6,
-  COS
+  COS, SO2F2
 ]
 gases_not_included: [CFC112, CFC113a, CFC114, H1202, HFC23]
 
