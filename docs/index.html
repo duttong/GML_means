@@ -1,0 +1,913 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Hole Story</title>
+<meta name="description" content="How the world fixed the ozone layer, told with NOAA's atmospheric measurements of CFC-11 and related gases, 1978–2025.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@500;700&display=swap">
+<style>
+/* Layout: one centered reading column (max 1120px); a navy "sky" hero band, then three story parts and a classroom section, each a stack of panels that become grids on wide screens. */
+:root {
+  --bg: #F4F6F9;
+  --surface: #FFFFFF;
+  --ink: #0F1B2D;
+  --ink-2: #44526A;
+  --rule: #D5DBE4;
+  --grid: #E3E8EF;
+  --cfc: #D9622B;          /* chlorine / CFCs / "more" */
+  --cfc-text: #B9481A;
+  --ozone: #2B62B8;        /* ozone / recovery / "less" */
+  --ozone-text: #2257A8;
+  --tint-ozone: #DCE6F5;
+  --tint-cfc: #FBE3D5;
+  --sky: #0E1F3A;          /* hero band, same in both themes */
+  --sky-ink: #FFFFFF;
+  --sky-ink-2: #C9D5E6;
+  --sky-accent: #F2894E;
+  --band-hn: #257de0; --band-ln: #f47230; --band-ls: #00b894; --band-hs: #f2a600;
+  --carbon: #0F1B2D; --fluorine: #8FA8C8;
+  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0B1424; --surface: #121F35; --ink: #E8EDF5; --ink-2: #A7B4C8; --rule: #2A3B57; --grid: #1E2D47;
+    --cfc: #F2894E; --cfc-text: #F59A66; --ozone: #6E9BE6; --ozone-text: #8FB2EE;
+    --tint-ozone: #1A2C4A; --tint-cfc: #3A2418;
+    --sky: #0E1F3A; --sky-ink: #FFFFFF; --sky-ink-2: #C9D5E6; --sky-accent: #F2894E;
+    --band-hn: #338ced; --band-ln: #e76624; --band-ls: #00a888; --band-hs: #d28e05;
+    --carbon: #3A4A64; --fluorine: #8FA8C8;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0B1424; --surface: #121F35; --ink: #E8EDF5; --ink-2: #A7B4C8; --rule: #2A3B57; --grid: #1E2D47;
+  --cfc: #F2894E; --cfc-text: #F59A66; --ozone: #6E9BE6; --ozone-text: #8FB2EE;
+  --tint-ozone: #1A2C4A; --tint-cfc: #3A2418;
+  --sky: #0E1F3A; --sky-ink: #FFFFFF; --sky-ink-2: #C9D5E6; --sky-accent: #F2894E;
+  --band-hn: #338ced; --band-ln: #e76624; --band-ls: #00a888; --band-hs: #d28e05;
+  --carbon: #3A4A64; --fluorine: #8FA8C8;
+  color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font-family: var(--font-body); font-size: 17px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--font-display); margin: 0; text-wrap: balance; letter-spacing: -0.02em; }
+p { margin: 0; text-wrap: pretty; }
+sub { font-size: 0.7em; line-height: 0; }
+a { color: var(--ozone-text); text-underline-offset: 2px; }
+a:hover { color: var(--ink); }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 3px solid var(--ozone); outline-offset: 2px; border-radius: 4px; }
+.mono { font-family: var(--font-mono); }
+.num { font-variant-numeric: tabular-nums; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+@media (min-width: 720px) { .wrap { padding-left: max(32px, env(safe-area-inset-left, 0px)); padding-right: max(32px, env(safe-area-inset-right, 0px)); } }
+
+/* ---------- hero ---------- */
+.hero { background: var(--sky); color: var(--sky-ink); position: relative; overflow: hidden; }
+.hero .wrap { position: relative; padding-block: 56px 64px; display: grid; gap: 32px; }
+.hero-decor { position: absolute; right: -120px; bottom: -40px; width: 760px; max-width: none; height: 300px; pointer-events: none; }
+.kicker { font-size: 13px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--sky-ink-2); }
+.hero h1 { font-size: clamp(56px, 11vw, 132px); line-height: 0.92; letter-spacing: -0.04em; }
+.hero .sub { font-family: var(--font-display); font-weight: 700; font-size: clamp(24px, 3.6vw, 40px); line-height: 1.1; color: var(--sky-accent); letter-spacing: -0.02em; }
+.hero .intro { font-size: clamp(17px, 2vw, 20px); color: var(--sky-ink-2); max-width: 40em; }
+.hero-text { display: grid; gap: 18px; position: relative; }
+.hero-stat { display: grid; gap: 4px; align-self: end; position: relative; }
+.hero-stat .big { font-family: var(--font-display); font-weight: 700; font-size: clamp(72px, 12vw, 128px); line-height: 0.85; letter-spacing: -0.04em; color: var(--sky-accent); }
+.hero-stat .lab { font-weight: 500; font-size: 17px; line-height: 1.35; }
+@media (min-width: 900px) {
+  .hero .wrap { grid-template-columns: minmax(0, 1fr) auto; align-items: end; padding-block: 80px 96px; }
+  .hero-stat { text-align: right; justify-items: end; }
+}
+
+/* ---------- sections ---------- */
+main { display: grid; gap: 80px; padding-block: 56px 0; }
+section { display: grid; gap: 28px; }
+.part { display: flex; align-items: center; gap: 16px; font-size: 13px; font-weight: 800; letter-spacing: 0.16em; text-transform: uppercase; color: var(--cfc-text); }
+.part.ozone { color: var(--ozone-text); }
+.part::after { content: ""; flex: 1; height: 2px; background: var(--ink); opacity: 0.85; }
+h2 { font-size: clamp(30px, 4.4vw, 48px); line-height: 1.05; }
+h3 { font-size: clamp(22px, 2.6vw, 28px); line-height: 1.15; }
+.lede { color: var(--ink-2); font-size: 18px; max-width: 46em; }
+.grid3 { display: grid; gap: 40px; }
+@media (min-width: 900px) { .grid3 { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.panel { display: grid; gap: 16px; align-content: start; min-width: 0; }
+.panel p { max-width: 60ch; }
+
+/* molecule */
+.molecule-row { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; }
+.molecule-row svg { width: 180px; height: auto; flex: none; }
+.formula { font-family: var(--font-mono); font-weight: 700; font-size: 34px; line-height: 1; }
+.small { font-size: 14px; color: var(--ink-2); line-height: 1.45; }
+.uses { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.use { display: grid; justify-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--ink-2); text-align: center; }
+.use svg { width: 40px; height: 40px; stroke: var(--ink); }
+
+/* chain reaction */
+.reaction { display: grid; gap: 20px; background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 20px; }
+@media (min-width: 900px) { .reaction { grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); padding: 28px; gap: 32px; } }
+.steps { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.steps li { display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; align-items: start; padding: 10px; border-radius: 8px; color: var(--ink-2); transition: background 0.25s, color 0.25s; }
+.steps li .n { width: 36px; height: 36px; border-radius: 18px; display: grid; place-items: center; font-family: var(--font-display); font-weight: 700; background: var(--grid); color: var(--ink); }
+.steps li strong { color: var(--ink); }
+.steps li.on { background: var(--tint-cfc); color: var(--ink); }
+.steps li.on .n { background: var(--ink); color: var(--bg); }
+.eq { font-family: var(--font-mono); font-size: 15px; font-weight: 500; color: var(--ink); white-space: nowrap; }
+.eq .cl { color: var(--cfc-text); font-weight: 700; }
+.eq .o3 { color: var(--ozone-text); font-weight: 700; }
+.scene-wrap { display: grid; gap: 14px; align-content: start; min-width: 0; }
+.scene { width: 100%; height: auto; background: var(--tint-ozone); border-radius: 8px; display: block; }
+.atom { transition: transform 0.9s cubic-bezier(.5,0,.25,1), opacity 0.5s; }
+.atom.instant { transition: none; }
+.scene .lbl { font-family: var(--font-body); font-size: 21px; font-weight: 600; fill: var(--ink-2); transition: opacity 0.4s; }
+.scene .atom-t { font-family: var(--font-display); font-weight: 700; font-size: 18px; fill: #FFFFFF; }
+.scene .atom-t.dark { fill: #0F1B2D; }
+.uv { transition: opacity 0.4s; }
+.caption { min-height: 76px; display: grid; gap: 6px; }
+.counter { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.counter .val { font-family: var(--font-display); font-weight: 700; font-size: 40px; line-height: 1; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+.controls { display: flex; flex-wrap: wrap; gap: 10px; }
+.btn { min-height: 44px; padding: 0 18px; border-radius: 999px; border: 2px solid var(--ink); background: transparent; font-weight: 600; cursor: pointer; }
+.btn.primary { background: var(--ink); color: var(--bg); }
+.btn:hover { background: var(--grid); }
+.btn.primary:hover { background: var(--ink-2); border-color: var(--ink-2); }
+.btn:disabled { opacity: 0.4; cursor: default; }
+
+/* atmosphere */
+.atmos { width: 100%; height: auto; display: block; }
+.atmos text { font-family: var(--font-body); }
+
+/* ---------- evidence ---------- */
+.explorer { display: grid; gap: 22px; }
+.picker { display: grid; gap: 14px; }
+.chip-group { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.chip-group .glabel { font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-2); width: 100%; }
+.chip { min-height: 44px; padding: 0 16px; border-radius: 999px; border: 1.5px solid var(--rule); background: var(--surface); font-weight: 600; cursor: pointer; }
+.chip:hover { border-color: var(--ink-2); }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+@media (min-width: 720px) { .picker { grid-template-columns: repeat(3, auto); justify-content: start; column-gap: 32px; } }
+.gas-head { display: grid; gap: 14px; }
+.gas-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; }
+.gas-title .name { font-family: var(--font-display); font-weight: 700; font-size: 28px; letter-spacing: -0.02em; }
+.gas-title .f { font-family: var(--font-mono); font-size: 18px; color: var(--ink-2); }
+.tag { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 700; padding: 3px 10px; border-radius: 999px; }
+.tag.banned { background: var(--tint-cfc); color: var(--cfc-text); }
+.tag.temp { background: var(--grid); color: var(--ink); }
+.tag.safe { background: var(--tint-ozone); color: var(--ozone-text); }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--rule); border: 1px solid var(--rule); border-radius: 10px; overflow: hidden; }
+@media (min-width: 720px) { .tiles { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.tile { background: var(--surface); padding: 14px 16px; display: grid; gap: 2px; align-content: start; }
+.tile .k { font-size: 12px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-2); }
+.tile .v { font-family: var(--font-display); font-weight: 700; font-size: 28px; line-height: 1.15; font-variant-numeric: tabular-nums; }
+.tile .s { font-size: 14px; color: var(--ink-2); }
+.toolbar { display: flex; flex-wrap: wrap; gap: 12px; justify-content: space-between; align-items: center; }
+.seg { display: inline-flex; border: 1.5px solid var(--rule); border-radius: 999px; padding: 3px; background: var(--surface); }
+.seg button { min-height: 38px; padding: 0 14px; border: 0; border-radius: 999px; background: transparent; font-weight: 600; font-size: 15px; cursor: pointer; color: var(--ink-2); }
+.seg button[aria-pressed="true"] { background: var(--ink); color: var(--bg); }
+.legend { display: flex; flex-wrap: wrap; gap: 6px 18px; font-size: 14px; color: var(--ink-2); }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.legend i { width: 18px; height: 0; border-top: 3px solid currentColor; display: inline-block; }
+.chart { position: relative; min-width: 0; }
+.chart .plot { width: 100%; touch-action: pan-y; }
+.chart svg { display: block; overflow: visible; }
+.chart text { font-family: var(--font-body); }
+.ax { fill: var(--ink-2); font-size: 12px; }
+.ax-strong { fill: var(--ink); font-size: 13px; font-weight: 700; }
+.gridline { stroke: var(--grid); stroke-width: 1; }
+.baseline { stroke: var(--ink); stroke-width: 1.5; }
+.event-line { stroke: var(--ink-2); stroke-width: 1; stroke-dasharray: 4 5; }
+.shade { fill: var(--tint-ozone); }
+.shade-t { fill: var(--ozone-text); font-size: 13px; font-weight: 700; }
+.ann { fill: var(--ink); font-size: 13px; font-weight: 700; }
+.ann-sub { fill: var(--ink-2); font-size: 12px; }
+.crosshair { stroke: var(--ink-2); stroke-width: 1; }
+.hit { fill: transparent; cursor: crosshair; }
+.hit:focus { outline: none; }
+.tip { position: absolute; top: 0; left: 0; pointer-events: none; background: var(--surface); color: var(--ink); border: 1px solid var(--rule); border-radius: 8px; padding: 8px 12px; font-size: 14px; line-height: 1.45; box-shadow: 0 6px 20px rgba(15, 27, 45, 0.14); min-width: 140px; z-index: 2; }
+.tip .yr { font-weight: 700; margin-bottom: 2px; }
+.tip .row { display: flex; align-items: center; gap: 8px; white-space: nowrap; }
+.tip .row i { width: 14px; height: 0; border-top: 3px solid currentColor; flex: none; }
+.tip .row b { font-variant-numeric: tabular-nums; }
+.tip .row span { color: var(--ink-2); }
+.event-key { display: grid; gap: 4px; font-size: 14px; color: var(--ink-2); padding-left: 0; margin: 0; list-style: none; }
+.event-key b { color: var(--ink); font-variant-numeric: tabular-nums; }
+.subhead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 14px; }
+.subhead h3 { font-size: 22px; }
+.ppt { border: 2px solid var(--ink); border-radius: 10px; padding: 16px 18px; display: grid; gap: 4px; max-width: 520px; }
+.ppt .k { font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ozone-text); }
+.evidence-head { display: grid; gap: 20px; }
+@media (min-width: 900px) { .evidence-head { grid-template-columns: minmax(0, 1fr) 420px; align-items: end; } }
+details.numbers > summary, details.q > summary { cursor: pointer; font-weight: 600; min-height: 44px; display: flex; align-items: center; gap: 10px; list-style: none; }
+details > summary::-webkit-details-marker { display: none; }
+details > summary::before { content: ""; width: 9px; height: 9px; border-right: 2px solid currentColor; border-bottom: 2px solid currentColor; transform: rotate(-45deg); transition: transform 0.2s; flex: none; margin-right: 4px; }
+details[open] > summary::before { transform: rotate(45deg); }
+.numbers-bar { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; justify-content: space-between; }
+.table-box { overflow-x: auto; max-height: 420px; overflow-y: auto; border: 1px solid var(--rule); border-radius: 8px; margin-top: 10px; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; background: var(--surface); }
+th, td { padding: 6px 12px; text-align: right; border-bottom: 1px solid var(--grid); white-space: nowrap; }
+th:first-child, td:first-child { text-align: left; }
+thead th { position: sticky; top: 0; background: var(--surface); border-bottom: 2px solid var(--rule); font-weight: 700; }
+.copy-status { font-size: 14px; color: var(--ink-2); min-height: 1.4em; }
+
+/* ---------- science in action ---------- */
+.bands { display: grid; border-radius: 10px; overflow: hidden; border: 1px solid var(--rule); }
+.band { display: grid; grid-template-columns: 22px minmax(0, 1fr); gap: 12px; padding: 12px 14px; background: var(--surface); }
+.band:nth-child(odd) { background: var(--tint-ozone); }
+.band .dots { display: grid; align-content: center; justify-items: center; gap: 4px; }
+.band .dots i { width: 10px; height: 10px; border-radius: 5px; background: var(--cfc); display: block; }
+.band .bn { font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ozone-text); }
+.band .bn span { font-weight: 500; letter-spacing: 0; text-transform: none; color: var(--ink-2); margin-left: 6px; font-size: 13px; }
+.band .bs { font-size: 15px; line-height: 1.45; }
+.report { display: grid; gap: 12px; }
+.rrow { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 4px 12px; align-items: center; }
+.rrow .rn { font-weight: 700; font-size: 15px; }
+.rrow .rn span { font-weight: 400; color: var(--ink-2); font-size: 13px; margin-left: 6px; }
+.rrow .rv { font-family: var(--font-display); font-weight: 700; font-size: 20px; text-align: right; grid-row: span 2; font-variant-numeric: tabular-nums; }
+.rbar { height: 12px; background: var(--grid); border-radius: 6px; overflow: hidden; }
+.rbar i { display: block; height: 100%; background: var(--ozone); border-radius: 6px; }
+
+/* ---------- classroom ---------- */
+.questions { display: grid; gap: 12px; }
+details.q { background: var(--surface); border: 1px solid var(--rule); border-radius: 10px; padding: 6px 18px; }
+details.q > summary { font-size: 17px; padding-block: 8px; }
+details.q .a { padding: 2px 0 16px 23px; display: grid; gap: 10px; color: var(--ink); }
+.qnum { font-family: var(--font-display); font-weight: 700; color: var(--cfc-text); margin-right: 2px; }
+
+/* ---------- timeline & footer ---------- */
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; position: relative; }
+.timeline li { display: grid; grid-template-columns: 76px 20px minmax(0, 1fr); gap: 12px; align-items: start; padding-bottom: 18px; position: relative; }
+.timeline li::before { content: ""; position: absolute; left: 97px; top: 18px; bottom: 0; width: 2px; background: var(--rule); }
+.timeline li:last-child::before { display: none; }
+.timeline .ty { font-family: var(--font-display); font-weight: 700; font-size: 20px; text-align: right; font-variant-numeric: tabular-nums; line-height: 1.3; }
+.timeline .dot { width: 14px; height: 14px; border-radius: 7px; background: var(--ink); margin: 6px 3px 0; position: relative; z-index: 1; }
+.timeline li.future .dot { background: var(--bg); border: 2.5px solid var(--ozone); }
+.timeline li.future .ty { color: var(--ozone-text); }
+.timeline li.data .dot { background: var(--cfc); }
+.timeline .tt { line-height: 1.45; }
+@media (min-width: 900px) { .timeline { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(6, auto); grid-auto-flow: column; column-gap: 48px; } .timeline li:nth-child(6)::before { display: none; } }
+.heal { background: var(--sky); color: var(--sky-ink); border-radius: 12px; padding: 28px 24px; display: grid; gap: 20px; }
+.heal h3 { font-size: clamp(26px, 3.4vw, 36px); }
+.heal .years { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.heal .years b { display: block; font-family: var(--font-display); font-size: clamp(32px, 6vw, 60px); line-height: 1; color: var(--sky-accent); letter-spacing: -0.02em; }
+.heal .years span { font-weight: 600; font-size: 15px; }
+.heal p { color: var(--sky-ink-2); font-size: 15px; }
+footer { margin-top: 80px; border-top: 1px solid var(--rule); }
+footer .wrap { padding-block: 32px 48px; display: grid; gap: 10px; font-size: 14px; color: var(--ink-2); }
+footer strong { color: var(--ink); }
+
+@media (prefers-reduced-motion: reduce) {
+  .atom, .uv, .scene .lbl, .steps li, details > summary::before { transition: none !important; }
+}
+</style>
+<style>body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+</head>
+<body>
+<header class="hero">
+  <svg class="hero-decor" viewBox="0 0 760 300" aria-hidden="true">
+    <circle cx="560" cy="1260" r="1100" fill="#16305A"/>
+    <circle cx="560" cy="1260" r="1140" fill="none" stroke="#3F7BD6" stroke-width="18"/>
+    <path d="M460.6,124.3 A1140,1140 0 0 1 718.7,131.1" fill="none" stroke="#0E1F3A" stroke-width="12"/>
+    <circle cx="560" cy="1260" r="1190" fill="none" stroke="#2A4A7A" stroke-width="1.5" stroke-dasharray="3 10"/>
+  </svg>
+  <div class="wrap">
+    <div class="hero-text">
+      <div class="kicker">Real data from NOAA’s Global Monitoring Laboratory · 1978–2025</div>
+      <h1>The Hole Story.</h1>
+      <div class="sub">How the world fixed the ozone layer.</div>
+      <p class="intro">CFCs from old fridges and spray cans tore a hole in Earth’s ozone layer. The world banned them, and scientists have tracked the recovery one flask of air at a time. Explore their measurements below.</p>
+    </div>
+    <div class="hero-stat">
+      <div class="big num">−21%</div>
+      <div class="lab">less CFC-11 in the air<br>than at its 1994 peak</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+<!-- ================= PART 1 ================= -->
+<section aria-labelledby="p1">
+  <div class="part">Part 1 · The problem</div>
+  <h2 id="p1">A miracle chemical with a hidden cost</h2>
+
+  <div class="grid3">
+    <article class="panel">
+      <h3>Meet CFC-11</h3>
+      <div class="molecule-row">
+        <svg viewBox="0 0 280 204" role="img" aria-label="Model of a CFC-11 molecule: one carbon atom bonded to three chlorine atoms and one fluorine atom.">
+          <g stroke="var(--carbon)" stroke-width="12" stroke-linecap="round">
+            <line x1="140" y1="102" x2="52" y2="50"/><line x1="140" y1="102" x2="228" y2="52"/><line x1="140" y1="102" x2="74" y2="154"/><line x1="140" y1="102" x2="220" y2="158"/>
+          </g>
+          <circle cx="140" cy="102" r="38" fill="var(--carbon)"/>
+          <text x="140" y="113" text-anchor="middle" font-family="Space Grotesk, Inter, sans-serif" font-weight="700" font-size="32" fill="#FFFFFF">C</text>
+          <g stroke="var(--bg)" stroke-width="5">
+            <circle cx="52" cy="50" r="45" fill="var(--cfc)"/><circle cx="228" cy="52" r="45" fill="var(--cfc)"/><circle cx="74" cy="154" r="45" fill="var(--cfc)"/><circle cx="220" cy="158" r="33" fill="var(--fluorine)"/>
+          </g>
+          <g font-family="Space Grotesk, Inter, sans-serif" font-weight="700" text-anchor="middle">
+            <text x="52" y="62" font-size="34" fill="#FFFFFF">Cl</text><text x="228" y="64" font-size="34" fill="#FFFFFF">Cl</text><text x="74" y="166" font-size="34" fill="#FFFFFF">Cl</text><text x="220" y="169" font-size="30" fill="#0F1B2D">F</text>
+          </g>
+        </svg>
+        <div style="display: grid; gap: 6px">
+          <div class="formula">CCl<sub>3</sub>F</div>
+          <div class="small">trichlorofluoromethane<br>1 carbon · 1 fluorine · <strong style="color: var(--cfc-text)">3 chlorine</strong></div>
+        </div>
+      </div>
+      <p>CFCs (chlorofluorocarbons) were invented in 1928 as “miracle” chemicals: non-toxic, non-flammable and cheap. By the 1970s they were everywhere.</p>
+      <div class="uses" aria-label="Common uses of CFCs">
+        <div class="use"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="4" width="28" height="48" rx="4"/><line x1="14" y1="22" x2="42" y2="22"/><line x1="20" y1="11" x2="20" y2="16"/><line x1="20" y1="28" x2="20" y2="36"/></svg>Fridges</div>
+        <div class="use"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="6" y="10" width="44" height="22" rx="4"/><line x1="12" y1="25" x2="44" y2="25"/><path d="M14 40 q4 4 0 8"/><path d="M28 40 q4 4 0 8"/><path d="M42 40 q4 4 0 8"/></svg>Air conditioners</div>
+        <div class="use"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="20" width="20" height="32" rx="3"/><rect x="18" y="12" width="12" height="8" rx="1"/><line x1="30" y1="15" x2="36" y2="15"/><circle cx="42" cy="10" r="1.5"/><circle cx="46" cy="16" r="1.5"/><circle cx="42" cy="21" r="1.5"/></svg>Spray cans</div>
+        <div class="use"><svg viewBox="0 0 56 56" fill="none" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 22 L20 12 L48 12 L48 36 L36 46 L8 46 Z"/><line x1="8" y1="22" x2="36" y2="22"/><line x1="36" y1="22" x2="48" y2="12"/><line x1="36" y1="22" x2="36" y2="46"/><circle cx="16" cy="32" r="2"/><circle cx="26" cy="38" r="2"/><circle cx="24" cy="29" r="2"/></svg>Foam</div>
+      </div>
+      <p><strong>The catch:</strong> CFCs are so stable that nothing in the lower air breaks them down. CFC-11 lasts about <strong>52 years</strong>, plenty of time to drift up to the ozone layer.</p>
+    </article>
+
+    <article class="panel">
+      <h3>Earth’s sunscreen</h3>
+      <svg class="atmos" viewBox="0 0 661 268" role="img" aria-label="Diagram of the atmosphere: the ozone layer sits 15 to 35 kilometers up in the stratosphere and absorbs most incoming UV-B sunlight before it reaches the ground.">
+        <rect x="70" y="17" width="591" height="171" fill="var(--grid)"/>
+        <rect x="70" y="188" width="591" height="54" fill="var(--surface)"/>
+        <rect x="70" y="84.5" width="591" height="90" fill="var(--tint-ozone)"/>
+        <text x="640" y="135.5" text-anchor="end" font-size="22" font-weight="700" fill="var(--ozone-text)">OZONE LAYER</text>
+        <text x="640" y="163" text-anchor="end" font-size="19" fill="var(--ink-2)">15–35 km up</text>
+        <text x="640" y="63" text-anchor="end" font-size="19" font-weight="600" fill="var(--ink-2)">Stratosphere</text>
+        <rect x="70" y="242" width="591" height="14" fill="var(--ink)"/>
+        <text x="80" y="232" font-size="19" font-weight="700" fill="var(--ink)">You</text>
+        <text x="640" y="230" text-anchor="end" font-size="19" fill="var(--ink-2)">a little reaches the ground</text>
+        <g font-size="19" fill="var(--ink-2)" text-anchor="end"><text x="58" y="249">0</text><text x="58" y="204">10</text><text x="58" y="159">20</text><text x="58" y="114">30</text><text x="58" y="69">40</text><text x="58" y="24">50</text></g>
+        <defs><marker id="ah" viewBox="0 0 10 10" markerWidth="4" markerHeight="4" refX="5" refY="5" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="var(--cfc)"/></marker></defs>
+        <g stroke="var(--cfc)" marker-end="url(#ah)">
+          <line x1="160" y1="8" x2="110" y2="111.5" stroke-width="6"/><line x1="230" y1="8" x2="180" y2="134" stroke-width="6"/><line x1="300" y1="8" x2="250" y2="156.5" stroke-width="6"/><line x1="370" y1="8" x2="320" y2="218" stroke-width="3"/>
+        </g>
+        <text x="640" y="28" text-anchor="end" font-size="21" font-weight="700" fill="var(--cfc-text)">UV-B from the Sun</text>
+      </svg>
+      <p>Ozone (O<sub>3</sub>) absorbs most of the Sun’s <strong>UV-B</strong> rays, which cause sunburn, skin cancer and cataracts, and harm crops and sea life.</p>
+      <p><strong>The ozone hole.</strong> In 1985, scientists found ozone over Antarctica plunging each spring, as frigid clouds there supercharge chlorine’s attack. The “hole” still returns every September to November.</p>
+    </article>
+
+    <article class="panel">
+      <h3>Why it took so long to notice</h3>
+      <p>In 1974, chemists Mario Molina and F. Sherwood Rowland warned that chlorine from CFCs could destroy stratospheric ozone. Many people doubted them, because CFCs seemed harmless at ground level.</p>
+      <p>The Antarctic ozone hole, reported in 1985, proved the danger was real. Two years later, nations signed the <strong>Montreal Protocol</strong> to phase out CFCs. In 2009 it became the first United Nations treaty ratified by every country.</p>
+      <p>Molina, Rowland and Paul Crutzen shared the 1995 Nobel Prize in Chemistry for their ozone research.</p>
+    </article>
+  </div>
+
+  <div class="reaction" id="reaction">
+    <div style="display: grid; gap: 14px; align-content: start">
+      <h3>How one chlorine atom wrecks ozone</h3>
+      <p class="small" style="font-size: 15px">Step through the chain reaction. Watch what happens to the chlorine atom at the end.</p>
+      <ol class="steps" id="steps">
+        <li data-step="0"><span class="n">1</span><span><strong>Drift up.</strong> Over years, CFCs rise into the stratosphere, home of the ozone layer.</span></li>
+        <li data-step="1"><span class="n">2</span><span><strong>Break.</strong> UV light frees a chlorine atom.<br><span class="eq">CCl<sub>3</sub>F + UV → <span class="cl">Cl</span> + CCl<sub>2</sub>F</span></span></li>
+        <li data-step="2"><span class="n">3</span><span><strong>Attack.</strong> Chlorine tears ozone apart.<br><span class="eq"><span class="cl">Cl</span> + <span class="o3">O<sub>3</sub></span> → ClO + O<sub>2</sub></span></span></li>
+        <li data-step="3"><span class="n">4</span><span><strong>Repeat.</strong> The chlorine is set free to strike again.<br><span class="eq">ClO + O → <span class="cl">Cl</span> + O<sub>2</sub></span></span></li>
+      </ol>
+    </div>
+    <div class="scene-wrap">
+      <svg class="scene" id="scene" viewBox="0 0 640 300" role="img" aria-label="Animated model of the chlorine chain reaction">
+        <g class="uv" id="uv" opacity="0">
+          <line x1="40" y1="10" x2="104" y2="96" stroke="var(--cfc)" stroke-width="5" stroke-dasharray="10 8"/>
+          <text x="60" y="44" class="lbl" style="fill: var(--cfc-text); font-weight: 800">UV</text>
+        </g>
+        <text class="lbl" id="l-cfc" x="140" y="256" text-anchor="middle">CFC-11</text>
+        <text class="lbl" id="l-o3" x="462" y="174" text-anchor="middle">ozone (O₃)</text>
+        <text class="lbl" id="l-o" x="540" y="288" text-anchor="middle">oxygen atom</text>
+        <text class="lbl" id="l-o2a" x="564" y="112" text-anchor="middle" opacity="0">O₂</text>
+        <text class="lbl" id="l-o2b" x="503" y="288" text-anchor="middle" opacity="0">O₂</text>
+        <text class="lbl" id="l-free" x="340" y="292" text-anchor="middle" opacity="0" style="fill: var(--cfc-text); font-weight: 800">free again!</text>
+        <g id="atoms"></g>
+      </svg>
+      <div class="caption" aria-live="polite">
+        <div id="cap-title" style="font-weight: 700"></div>
+        <div id="cap-eq" class="eq"></div>
+      </div>
+      <div class="counter"><span class="val" id="count">0</span><span class="small" style="font-size: 15px">ozone molecules destroyed by this one chlorine atom</span></div>
+      <div class="controls">
+        <button class="btn" id="r-back" type="button">Back</button>
+        <button class="btn primary" id="r-next" type="button">Next step</button>
+        <button class="btn" id="r-ff" type="button">Fast-forward</button>
+        <button class="btn" id="r-reset" type="button">Start over</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PART 2 ================= -->
+<section aria-labelledby="p2">
+  <div class="part ozone">Part 2 · The evidence</div>
+  <div class="evidence-head">
+    <div style="display: grid; gap: 12px">
+      <h2 id="p2">The ban worked. See for yourself.</h2>
+      <p class="lede">Yearly global averages measured by NOAA, from air sampled at remote stations around the world. Pick a gas, then hover or tap the chart to read exact values.</p>
+    </div>
+    <div class="ppt">
+      <div class="k">What is a “ppt”?</div>
+      <div><strong>Parts per trillion.</strong> 212 ppt means 212 CFC-11 molecules in every trillion molecules of air, like 212 seconds in 31,700 years.</div>
+    </div>
+  </div>
+
+  <div class="explorer">
+    <div class="picker" id="picker" aria-label="Choose a gas"></div>
+
+    <div class="gas-head">
+      <div class="gas-title"><span class="name" id="g-name"></span><span class="f" id="g-formula"></span><span class="tag" id="g-tag"></span></div>
+      <p id="g-desc" class="small" style="font-size: 16px; color: var(--ink)"></p>
+      <div class="tiles" id="g-tiles"></div>
+    </div>
+
+    <div class="toolbar">
+      <div class="seg" role="group" aria-label="Chart view">
+        <button type="button" id="v-global" aria-pressed="true">Global average</button>
+        <button type="button" id="v-bands" aria-pressed="false">By latitude band</button>
+      </div>
+      <div class="legend" id="legend" hidden></div>
+    </div>
+
+    <div class="chart" id="main-chart"><div class="plot"></div><div class="tip" hidden></div></div>
+    <ul class="event-key" id="event-key" hidden></ul>
+
+    <div class="subhead"><h3 id="bars-title">How much did it change each year?</h3><span class="small" style="font-size: 15px">ppt per year, compared with the year before</span></div>
+    <div class="chart" id="bar-chart"><div class="plot"></div><div class="tip" hidden></div></div>
+
+    <details class="numbers">
+      <summary id="num-summary">Show the numbers</summary>
+      <div class="numbers-bar">
+        <span class="small">ppt, yearly averages (January–December). Bands: High North ≥30°N, Low North 0–30°N, Low South 0–30°S, High South ≥30°S.</span>
+        <span style="display: flex; gap: 10px; align-items: center"><span class="copy-status" id="copy-status" aria-live="polite"></span><button class="btn" type="button" id="copy-csv">Copy as CSV</button></span>
+      </div>
+      <div class="table-box"><table id="num-table"><thead><tr><th scope="col">Year</th><th scope="col">Global</th><th scope="col">High North</th><th scope="col">Low North</th><th scope="col">Low South</th><th scope="col">High South</th></tr></thead><tbody></tbody></table></div>
+    </details>
+  </div>
+</section>
+
+<!-- ================= PART 3 ================= -->
+<section aria-labelledby="p3">
+  <div class="part">Part 3 · Science in action</div>
+  <h2 id="p3">Watching the sky, catching a cheater</h2>
+  <div class="grid3">
+    <article class="panel">
+      <h3>Case file: the CFC-11 mystery</h3>
+      <p>After 2012, CFC-11’s fall suddenly slowed by half. Clue #2: northern air pulled further ahead of southern air. Someone in the north was making CFC-11 again, despite the ban.</p>
+      <p>NOAA scientists sounded the alarm in 2018. Studies traced much of it to eastern China, and emissions soon dropped.</p>
+      <div class="small" style="font-weight: 700">Extra CFC-11 in northern vs. southern air (ppt)</div>
+      <div class="chart" id="gap-chart"><div class="plot"></div><div class="tip" hidden></div></div>
+    </article>
+    <article class="panel">
+      <h3>How NOAA samples the air</h3>
+      <p>At 14 remote stations from the Arctic to the South Pole, clean air is collected and measured against NOAA’s standards in Boulder, Colorado.</p>
+      <div class="bands" aria-label="Sampling stations by latitude band">
+        <div class="band"><div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></div><div><div class="bn">High North<span>30°N to North Pole</span></div><div class="bs">Alert, Canada · Summit, Greenland · Utqiaġvik, Alaska · Mace Head, Ireland · Trinidad Head, Calif. · Niwot Ridge, Colo.</div></div></div>
+        <div class="band"><div class="dots" aria-hidden="true"><i></i><i></i><i></i></div><div><div class="bn">Low North<span>Equator to 30°N</span></div><div class="bs">Mauna Loa and Cape Kumukahi, Hawaiʻi · Ragged Point, Barbados</div></div></div>
+        <div class="band"><div class="dots" aria-hidden="true"><i></i></div><div><div class="bn">Low South<span>Equator to 30°S</span></div><div class="bs">Tutuila, American Samoa</div></div></div>
+        <div class="band"><div class="dots" aria-hidden="true"><i></i><i></i><i></i><i></i></div><div><div class="bn">High South<span>30°S to South Pole</span></div><div class="bs">Cape Grim, Tasmania · Ushuaia, Argentina · Palmer Station and South Pole, Antarctica</div></div></div>
+      </div>
+      <p class="small">Each band is averaged, then the four bands are averaged into one global number.</p>
+    </article>
+    <article class="panel">
+      <h3>Report card</h3>
+      <p>Drop since each banned gas peaked, to 2025. Short-lived gases vanish fastest.</p>
+      <div class="report" id="report"></div>
+      <p class="small"><strong style="color: var(--ink)">Next challenge:</strong> HFC-134a, a CFC replacement, spares ozone but traps heat. It rose from 2 to 140 ppt since 1995, so the 2016 Kigali Amendment now phases HFCs down.</p>
+    </article>
+  </div>
+</section>
+
+<!-- ================= CLASSROOM ================= -->
+<section aria-labelledby="p4">
+  <div class="part ozone">Your turn</div>
+  <h2 id="p4">Read the graph like a scientist</h2>
+  <p class="lede">Use the charts above to answer each question, then check your thinking.</p>
+  <div class="questions">
+    <details class="q"><summary><span><span class="qnum">1.</span> In what year did CFC-11 reach its highest level? About how many years after the Montreal Protocol was that?</span></summary>
+      <div class="a"><p>CFC-11 peaked in <strong>1994</strong> at about 268 ppt (1993 was almost identical). That is about 7 years after the 1987 Montreal Protocol. Factories took years to stop, and CFCs already inside fridges, foam and air conditioners kept leaking out.</p></div></details>
+    <details class="q"><summary><span><span class="qnum">2.</span> Using the yearly-change chart, compare how fast CFC-11 fell in 2003–2012 with 2014–2018.</span></summary>
+      <div class="a"><p>From 2003 to 2012 it fell about <strong>2 ppt per year</strong>. From 2014 to 2018 it fell only about <strong>1 ppt per year</strong>. Something was adding new CFC-11 to the air. See the Case file above.</p></div></details>
+    <details class="q"><summary><span><span class="qnum">3.</span> Switch to CFC-12. It was banned at the same time as CFC-11, so why has it dropped less from its peak?</span></summary>
+      <div class="a"><p>CFC-12 lasts about <strong>100 years</strong> in the air, roughly twice as long as CFC-11. Even with almost no new emissions, it disappears slowly. Compare the Report card: the longer a gas lasts, the smaller its drop.</p><p><button class="btn" type="button" data-show="cfc-12">Show CFC-12 on the chart</button></p></div></details>
+    <details class="q"><summary><span><span class="qnum">4.</span> Switch to HCFC-22. What changed around 2021, and why?</span></summary>
+      <div class="a"><p>HCFC-22 rose for decades because it replaced CFCs in air conditioners. It peaked in <strong>2021</strong> and is now falling. HCFCs damage ozone less than CFCs, but they still contain chlorine, so the Montreal Protocol is phasing them out too.</p><p><button class="btn" type="button" data-show="hcfc-22">Show HCFC-22 on the chart</button></p></div></details>
+    <details class="q"><summary><span><span class="qnum">5.</span> Switch the chart to “By latitude band.” Why was northern air so much higher than southern air in the 1980s, and why is the gap so small now?</span></summary>
+      <div class="a"><p>Most CFCs were used and released in the Northern Hemisphere, and it takes about a year for air to mix across the equator. While emissions were large, the north stayed ahead. With emissions now small, the hemispheres have nearly evened out.</p><p><button class="btn" type="button" data-show="cfc-11" data-view="bands">Show CFC-11 by latitude band</button></p></div></details>
+  </div>
+</section>
+
+<!-- ================= TIMELINE ================= -->
+<section aria-labelledby="p5">
+  <div class="part">The road to recovery</div>
+  <h2 id="p5">From warning to healing</h2>
+  <ol class="timeline">
+    <li><span class="ty">1928</span><span class="dot"></span><span class="tt">CFCs are invented for refrigerators.</span></li>
+    <li><span class="ty">1974</span><span class="dot"></span><span class="tt">Molina and Rowland warn that CFCs could destroy ozone.</span></li>
+    <li><span class="ty">1985</span><span class="dot"></span><span class="tt">Scientists report the Antarctic ozone hole.</span></li>
+    <li><span class="ty">1987</span><span class="dot"></span><span class="tt">The Montreal Protocol is signed.</span></li>
+    <li class="data"><span class="ty">1994</span><span class="dot"></span><span class="tt">CFC-11 in the air peaks at 268 ppt (NOAA data).</span></li>
+    <li><span class="ty">1995</span><span class="dot"></span><span class="tt">Nobel Prize in Chemistry for ozone research.</span></li>
+    <li><span class="ty">1996</span><span class="dot"></span><span class="tt">Developed countries stop making CFCs.</span></li>
+    <li><span class="ty">2009</span><span class="dot"></span><span class="tt">Every country has ratified the Montreal Protocol.</span></li>
+    <li><span class="ty">2010</span><span class="dot"></span><span class="tt">CFC production ends worldwide.</span></li>
+    <li><span class="ty">2016</span><span class="dot"></span><span class="tt">The Kigali Amendment adds heat-trapping HFCs.</span></li>
+    <li class="data"><span class="ty">2018</span><span class="dot"></span><span class="tt">NOAA reports new, illegal CFC-11 emissions.</span></li>
+    <li class="data"><span class="ty">2025</span><span class="dot"></span><span class="tt">CFC-11 falls 2.9 ppt in one year, its fastest drop on record.</span></li>
+  </ol>
+  <div class="heal">
+    <h3>When will the ozone layer heal?</h3>
+    <div class="years">
+      <div><b>~2040</b><span>Most of the world</span></div>
+      <div><b>~2045</b><span>The Arctic</span></div>
+      <div><b>~2066</b><span>Antarctica</span></div>
+    </div>
+    <p>Expected return to 1980 ozone levels, if every country keeps following the Montreal Protocol. Source: WMO/UNEP Scientific Assessment of Ozone Depletion, 2022.</p>
+  </div>
+</section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div><strong>Data:</strong> NOAA Global Monitoring Laboratory, Halocarbons and other Atmospheric Trace Species program. Global and semi-hemispheric annual means (January–December) computed from NOAA flask and in situ measurements, 1978–2025. <a href="https://gml.noaa.gov/hats/data.html">gml.noaa.gov/hats</a></div>
+    <div><strong>Gas lifetimes:</strong> SPARC (2013) and WMO/UNEP (2022) assessments. <strong>Recovery dates:</strong> WMO/UNEP Scientific Assessment of Ozone Depletion, 2022.</div>
+  </div>
+</footer>
+
+<script>
+const DATA = {"CFC11":{"y":[1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"G":[151.46,159.69,168.39,175.83,183.57,192.62,201.29,212.77,223.08,233.89,244.35,253.15,259.43,263.84,266.75,267.99,268.01,267.51,265.25,264.08,262.55,261.12,259.32,257.64,255.8,253.36,251.35,249.27,247.26,244.99,242.97,241.11,239.25,237.17,235.19,233.51,232.13,230.94,229.94,228.97,228.2,226.41,223.95,221.69,219.49,217.15,214.5,211.64],"HN":[159.32,166.09,175.73,182.65,190.78,200.22,207.92,219.19,229.48,242.35,254.47,262.31,266.66,269.07,271.78,272.43,271.19,270.25,267.25,265.59,264.01,262.12,260.77,259.13,257.17,254.62,252.32,250.4,248.18,245.96,243.94,242.0,240.19,238.24,236.15,234.71,233.73,232.51,231.53,230.65,229.53,227.55,224.83,222.25,220.01,217.55,214.9,212.08],"LN":[152.41,162.29,171.66,179.44,186.17,196.31,204.73,216.24,226.95,237.61,250.61,258.96,263.49,265.81,268.4,269.46,269.4,268.84,266.51,265.24,263.74,262.31,260.46,258.6,256.56,254.21,252.12,250.21,248.07,245.82,243.85,242.05,240.16,237.96,236.06,234.53,233.43,232.17,231.21,230.34,229.42,227.49,224.69,222.25,219.97,217.64,214.95,212.15],"LS":[143.78,153.48,161.94,171.12,180.05,188.27,196.94,208.56,218.24,228.06,237.62,246.6,254.22,259.96,263.32,265.66,266.09,265.66,264.27,263.37,261.6,260.42,258.3,256.87,255.15,252.61,251.08,248.82,247.05,244.82,242.75,240.81,238.73,236.63,234.6,232.9,231.06,229.85,229.09,227.98,227.4,225.74,223.51,221.35,219.14,216.88,214.25,211.43],"HS":[150.34,156.9,164.22,170.12,177.28,185.65,195.58,207.1,217.64,227.53,234.72,244.73,253.32,260.5,263.51,264.4,265.36,265.31,262.95,262.11,260.85,259.66,257.75,255.97,254.3,252.01,249.87,247.65,245.73,243.38,241.32,239.57,237.9,235.85,233.94,231.93,230.3,229.22,227.94,226.93,226.44,224.88,222.76,220.91,218.85,216.55,213.92,210.89]},"CFC12":{"y":[1978,1979,1980,1981,1982,1983,1984,1985,1986,1987,1988,1989,1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"G":[269.64,285.6,301.55,318.38,334.37,351.71,366.76,383.28,402.09,423.02,446.48,465.89,481.45,493.64,505.88,511.98,516.62,521.42,529.93,533.82,536.58,539.42,541.63,542.42,543.19,542.76,542.4,541.57,540.14,537.91,535.53,533.0,529.61,526.93,524.23,520.96,518.41,515.54,512.35,508.66,505.67,501.36,497.21,493.34,489.67,485.5,481.46,476.95],"HN":[284.44,296.27,313.8,328.74,346.1,364.1,376.73,393.53,411.68,432.9,465.13,481.35,495.39,505.89,517.64,522.09,524.3,528.56,535.24,537.8,540.53,542.42,544.6,545.36,545.97,545.0,544.18,543.18,541.36,539.03,536.32,533.67,530.33,527.62,524.76,521.43,519.2,516.33,512.82,508.91,505.61,501.36,497.42,493.21,489.53,485.15,481.07,476.78],"LN":[281.97,299.02,313.62,330.56,341.54,357.71,371.68,387.51,408.24,428.77,451.25,472.87,486.11,496.1,506.47,513.18,519.39,524.58,532.77,536.51,539.34,541.67,544.09,544.31,544.9,544.39,543.87,543.27,541.58,539.27,536.67,534.2,530.67,527.8,525.21,521.82,519.39,516.5,513.16,509.38,506.32,502.06,497.96,493.9,489.99,485.66,481.38,477.03],"LS":[259.32,276.39,290.36,310.16,327.92,345.39,361.59,377.35,396.17,416.74,438.35,457.21,473.11,487.45,500.5,508.39,514.78,520.76,527.6,531.9,534.4,537.86,539.6,540.93,541.49,541.45,541.54,540.72,539.36,537.64,535.36,533.1,529.43,526.82,523.98,520.62,517.55,514.53,512.05,508.35,505.39,501.21,497.14,493.4,489.99,485.71,481.71,477.27],"HS":[252.81,270.71,288.42,304.05,321.92,339.64,357.06,374.74,392.26,413.68,431.17,452.14,471.21,485.12,498.9,504.26,508.02,511.77,524.11,529.05,532.05,535.71,538.22,539.08,540.39,540.2,540.01,539.11,538.27,535.7,533.79,531.03,528.01,525.51,522.97,519.97,517.52,514.8,511.38,508.0,505.33,500.81,496.32,492.84,489.19,485.45,481.67,476.74]},"CFC113":{"y":[1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"G":[82.15,83.67,83.82,83.94,83.53,82.91,82.44,81.92,81.47,80.82,80.1,79.35,78.74,78.15,77.28,76.44,75.84,75.21,74.48,73.78,73.1,72.49,71.89,71.3,70.67,70.07,69.37,68.69,68.1,67.51,66.91,66.34,65.69],"HN":[84.2,84.78,84.71,84.6,84.06,83.31,82.74,82.2,81.72,80.98,80.19,79.43,78.81,78.16,77.33,76.48,75.94,75.21,74.53,73.85,73.12,72.52,71.95,71.36,70.67,70.04,69.35,68.73,68.08,67.48,66.83,66.3,65.68],"LN":[83.04,84.2,84.26,84.34,83.82,83.11,82.5,82.05,81.56,80.9,80.18,79.42,78.86,78.21,77.39,76.51,75.89,75.31,74.62,73.92,73.19,72.6,71.96,71.36,70.72,70.14,69.42,68.76,68.12,67.52,66.92,66.39,65.74],"LS":[80.77,82.94,83.17,83.53,83.13,82.57,82.42,81.71,81.43,80.82,80.11,79.38,78.66,78.14,77.18,76.41,75.81,75.15,74.39,73.67,73.11,72.43,71.79,71.29,70.72,70.15,69.47,68.75,68.22,67.64,67.05,66.34,65.78],"HS":[80.61,82.76,83.12,83.29,83.1,82.64,82.07,81.74,81.17,80.58,79.92,79.18,78.63,78.08,77.21,76.38,75.74,75.17,74.39,73.69,72.98,72.4,71.86,71.18,70.56,69.96,69.23,68.53,67.97,67.38,66.84,66.32,65.57]},"CCl4":{"y":[1990,1991,1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"G":[107.83,107.87,107.5,106.7,105.67,104.86,104.0,103.05,102.2,101.07,99.8,98.75,97.66,96.56,95.51,94.54,93.3,92.19,90.67,89.32,88.36,87.01,85.88,84.87,83.7,82.42,81.31,80.32,79.24,78.35,76.89,75.73,74.75,73.84,73.05,72.41],"HN":[109.9,109.39,108.84,107.75,106.19,105.18,104.56,103.49,102.69,101.52,100.53,99.61,98.5,97.33,96.22,95.18,93.91,92.74,91.25,89.83,88.88,87.59,86.42,85.36,84.36,83.16,82.01,81.09,79.93,79.04,77.62,76.26,75.21,74.33,73.62,73.03],"LN":[107.94,107.62,106.77,106.27,105.67,104.86,104.88,103.94,103.17,101.78,100.72,99.84,98.76,97.5,96.41,95.54,94.11,93.07,91.53,90.09,89.25,87.76,86.6,85.7,84.73,83.45,82.29,81.45,80.17,78.89,77.25,76.27,75.22,74.45,73.87,73.25],"LS":[107.03,107.32,107.54,106.73,105.93,105.54,103.73,102.73,101.75,100.86,99.27,98.14,96.99,96.23,95.21,94.25,93.15,92.06,90.42,89.06,88.07,86.81,85.77,84.73,83.36,81.88,80.91,79.95,78.8,78.16,76.76,75.56,74.72,73.56,72.69,72.0],"HS":[106.46,107.16,106.86,106.06,104.89,103.87,102.84,102.02,101.2,100.1,98.68,97.42,96.38,95.17,94.2,93.18,92.04,90.9,89.5,88.29,87.26,85.89,84.73,83.7,82.35,81.18,80.04,78.79,78.06,77.31,75.91,74.82,73.86,73.01,72.02,71.36]},"CH3CCl3":{"y":[1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"G":[134.29,127.88,117.9,105.5,92.16,78.52,65.73,54.81,45.68,37.92,31.58,26.45,21.93,18.34,15.35,12.89,10.8,9.07,7.58,6.33,5.24,4.36,3.66,3.09,2.62,2.21,1.89,1.63,1.42,1.26,1.11,0.99,0.88,0.77],"HN":[153.6,142.32,128.18,112.44,96.53,81.23,67.27,55.91,46.61,38.71,32.37,27.2,22.51,18.86,15.78,13.3,11.16,9.32,7.79,6.5,5.37,4.48,3.76,3.16,2.68,2.29,1.95,1.68,1.47,1.3,1.16,1.03,0.92,0.81],"LN":[140.37,133.2,121.09,106.8,93.46,79.48,65.84,54.94,45.66,37.99,31.51,26.47,21.92,18.33,15.33,12.9,10.75,9.05,7.57,6.3,5.21,4.34,3.63,3.03,2.58,2.19,1.89,1.69,1.5,1.32,1.16,1.02,0.88,0.79],"LS":[121.54,119.12,111.6,101.32,88.85,75.88,63.85,53.23,44.36,36.84,30.66,25.6,21.22,17.76,14.89,12.47,10.47,8.8,7.31,6.13,5.09,4.2,3.53,3.0,2.51,2.14,1.82,1.55,1.34,1.18,1.05,0.94,0.84,0.72],"HS":[121.65,116.87,110.73,101.46,89.81,77.48,65.97,55.18,46.09,38.14,31.79,26.54,22.07,18.43,15.4,12.87,10.83,9.12,7.63,6.38,5.31,4.4,3.72,3.17,2.69,2.24,1.89,1.62,1.39,1.23,1.09,0.96,0.86,0.76]},"H1211":{"y":[1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"G":[2.88,3.08,3.3,3.45,3.62,3.78,3.89,4.01,4.11,4.18,4.24,4.28,4.3,4.32,4.3,4.27,4.2,4.14,4.07,4.0,3.92,3.81,3.71,3.61,3.51,3.41,3.32,3.22,3.12,3.03,2.94,2.84,2.75,2.65],"HN":[3.04,3.25,3.45,3.62,3.79,3.94,4.05,4.15,4.25,4.33,4.38,4.42,4.43,4.44,4.42,4.37,4.3,4.22,4.14,4.07,3.98,3.87,3.77,3.66,3.56,3.45,3.36,3.26,3.16,3.07,2.97,2.88,2.78,2.68],"LN":[2.98,3.18,3.44,3.56,3.73,3.91,4.03,4.14,4.22,4.29,4.33,4.38,4.4,4.39,4.38,4.33,4.25,4.19,4.12,4.04,3.95,3.84,3.74,3.63,3.54,3.43,3.34,3.24,3.14,3.05,2.95,2.86,2.76,2.67],"LS":[2.75,2.98,3.19,3.34,3.51,3.67,3.76,3.92,4.03,4.1,4.15,4.18,4.21,4.24,4.24,4.22,4.15,4.08,4.02,3.95,3.88,3.78,3.67,3.57,3.48,3.38,3.29,3.19,3.09,3.0,2.91,2.82,2.73,2.63],"HS":[2.73,2.91,3.13,3.28,3.44,3.6,3.71,3.84,3.96,4.03,4.11,4.14,4.16,4.18,4.18,4.14,4.09,4.06,4.0,3.93,3.87,3.76,3.67,3.57,3.47,3.37,3.27,3.18,3.08,2.99,2.9,2.82,2.73,2.63]},"HCFC22":{"y":[1992,1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"G":[101.55,106.14,111.27,116.17,121.78,126.33,131.62,137.14,142.11,148.04,153.44,158.36,162.57,168.73,175.39,183.32,191.41,198.93,206.21,213.12,218.36,224.03,229.37,233.35,237.81,241.09,244.39,247.09,248.14,249.03,248.91,247.76,245.39,242.22],"HN":[111.08,115.72,119.61,125.03,130.29,135.11,140.33,146.29,152.31,158.78,164.19,169.16,173.11,179.92,187.06,195.47,203.85,210.97,218.57,225.36,229.89,235.7,241.9,244.83,249.0,252.6,255.18,258.32,258.65,259.17,258.81,256.9,254.4,250.28],"LN":[105.16,109.72,115.72,119.53,125.93,131.37,137.09,142.22,146.6,153.16,158.29,163.87,168.04,174.57,181.61,190.09,197.93,205.84,214.29,220.28,225.13,231.12,236.62,240.82,245.44,248.2,251.16,254.6,254.61,255.47,253.98,253.53,250.7,246.68],"LS":[95.5,100.35,106.07,110.69,116.69,120.26,125.31,131.31,135.94,141.16,146.66,151.13,155.58,161.56,168.03,175.72,183.37,191.15,197.9,204.8,210.52,216.23,220.59,225.07,229.68,233.13,236.84,238.85,240.93,241.55,242.09,240.85,238.56,236.21],"HS":[94.46,98.78,103.68,109.43,114.23,118.58,123.74,128.73,133.58,139.07,144.62,149.28,153.56,158.88,164.84,172.0,180.48,187.74,194.09,202.03,207.9,213.05,218.39,222.68,227.14,230.44,234.39,236.59,238.39,239.92,240.78,239.75,237.91,235.71]},"HCFC141b":{"y":[1993,1994,1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"G":[0.79,1.98,3.51,5.46,7.4,9.13,10.99,12.7,14.18,15.57,16.67,17.26,17.61,18.15,18.83,19.32,19.89,20.45,21.38,22.31,23.29,23.84,24.29,24.58,24.55,24.41,24.43,24.57,24.65,24.66,24.6,24.47,24.34],"HN":[1.31,2.83,4.92,7.08,9.12,11.01,12.88,14.73,16.19,17.71,18.63,18.87,18.96,19.5,20.2,20.74,21.17,21.86,22.98,23.99,24.88,25.4,25.71,25.99,25.89,25.64,25.86,26.1,26.15,26.15,26.05,25.97,25.7],"LN":[0.92,2.38,4.0,6.25,8.46,10.25,12.07,13.64,15.19,16.46,17.65,18.13,18.31,18.92,19.66,20.08,20.73,21.46,22.43,23.36,24.37,24.84,25.2,25.52,25.3,25.14,25.3,25.43,25.57,25.41,25.51,25.36,25.1],"LS":[0.54,1.54,2.77,4.56,6.28,7.85,9.86,11.54,12.99,14.28,15.43,16.24,16.81,17.36,18.04,18.41,19.01,19.44,20.24,21.16,22.2,22.73,23.39,23.56,23.61,23.55,23.39,23.53,23.58,23.65,23.53,23.39,23.46],"HS":[0.39,1.14,2.35,3.96,5.75,7.39,9.15,10.88,12.35,13.82,14.97,15.79,16.37,16.84,17.4,18.04,18.65,19.03,19.87,20.75,21.7,22.37,22.86,23.25,23.4,23.32,23.18,23.22,23.32,23.42,23.3,23.17,23.11]},"HFC134a":{"y":[1995,1996,1997,1998,1999,2000,2001,2002,2003,2004,2005,2006,2007,2008,2009,2010,2011,2012,2013,2014,2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025],"G":[1.67,3.08,5.22,7.68,10.71,14.03,17.58,21.63,25.67,29.87,34.71,39.12,43.51,47.91,52.57,57.52,62.94,67.79,72.74,78.0,83.64,89.79,96.05,102.29,108.15,113.49,119.18,124.67,129.82,134.84,139.56],"HN":[2.44,4.07,6.79,9.58,12.94,16.68,20.59,25.56,29.75,34.06,39.45,43.87,48.28,53.0,57.86,62.89,68.74,73.53,78.55,84.08,90.08,96.34,103.16,109.2,115.66,120.68,126.51,132.06,137.24,142.28,146.59],"LN":[1.93,3.61,6.29,8.87,12.04,15.39,19.15,23.13,27.58,31.91,36.76,41.32,45.81,50.1,55.01,60.46,65.77,70.53,75.63,81.17,87.28,93.62,99.77,105.9,111.94,117.07,123.04,128.11,133.88,139.13,143.36],"LS":[1.24,2.5,3.97,6.4,9.4,12.47,15.79,19.41,23.23,27.34,32.04,36.4,40.78,44.91,49.5,54.15,59.38,64.36,69.32,74.16,79.34,85.63,91.71,98.12,103.57,109.25,114.59,120.25,125.01,129.84,135.09],"HS":[1.05,2.12,3.84,5.89,8.47,11.57,14.8,18.42,22.12,26.17,30.6,34.91,39.16,43.61,47.91,52.57,57.88,62.76,67.47,72.6,77.87,83.57,89.56,95.93,101.44,106.96,112.57,118.25,123.14,128.13,133.21]}};
+
+const GASES = [
+  { id: 'CFC11', slug: 'cfc-11', name: 'CFC-11', f: 'CCl₃F', group: 'banned', life: 52, use: 'Foam insulation, spray cans and refrigeration. The first gas in this story.' },
+  { id: 'CFC12', slug: 'cfc-12', name: 'CFC-12', f: 'CCl₂F₂', group: 'banned', life: 102, use: 'Refrigerators and car air conditioners. The most abundant CFC.' },
+  { id: 'CFC113', slug: 'cfc-113', name: 'CFC-113', f: 'C₂Cl₃F₃', group: 'banned', life: 93, use: 'Cleaning solvent for electronics and circuit boards.' },
+  { id: 'CCl4', slug: 'carbon-tetrachloride', name: 'Carbon tetrachloride', f: 'CCl₄', group: 'banned', life: 32, use: 'Dry cleaning, fire extinguishers and an ingredient for making CFCs.' },
+  { id: 'CH3CCl3', slug: 'methyl-chloroform', name: 'Methyl chloroform', f: 'CH₃CCl₃', group: 'banned', life: 5, use: 'Industrial solvent for cleaning metal parts.' },
+  { id: 'H1211', slug: 'halon-1211', name: 'Halon-1211', f: 'CBrClF₂', group: 'banned', life: 16, use: 'Handheld fire extinguishers. Contains bromine, which destroys ozone even faster than chlorine.' },
+  { id: 'HCFC22', slug: 'hcfc-22', name: 'HCFC-22', f: 'CHClF₂', group: 'temp', life: 12, use: 'Air conditioners. A temporary CFC replacement that does far less ozone damage.' },
+  { id: 'HCFC141b', slug: 'hcfc-141b', name: 'HCFC-141b', f: 'CH₃CCl₂F', group: 'temp', life: 9, use: 'Foam insulation. A temporary replacement for CFC-11.' },
+  { id: 'HFC134a', slug: 'hfc-134a', name: 'HFC-134a', f: 'CH₂FCF₃', group: 'safe', life: 14, use: 'Car air conditioners and fridges. Contains no chlorine, so it is safe for ozone, but it traps heat over 1,000 times more strongly than CO₂.' },
+];
+const GROUPS = [
+  { key: 'banned', label: 'Banned ozone destroyers', tag: 'Banned ozone destroyer' },
+  { key: 'temp', label: 'Temporary replacements', tag: 'Being phased out' },
+  { key: 'safe', label: 'Ozone-safe replacements', tag: 'Ozone-safe, but traps heat' },
+];
+const EVENTS = [
+  { y: 1985, l: ['Ozone hole', 'discovered'], short: 'Ozone hole discovered', side: 'left' },
+  { y: 1987, l: ['Montreal', 'Protocol signed'], short: 'Montreal Protocol signed' },
+  { y: 1996, l: ['Developed nations', 'stop making CFCs'], short: 'Developed nations stop making CFCs' },
+  { y: 2010, l: ['CFCs banned', 'worldwide'], short: 'CFCs banned worldwide' },
+];
+const BANDS = [
+  { k: 'HN', label: 'High North', color: 'var(--band-hn)' },
+  { k: 'LN', label: 'Low North', color: 'var(--band-ln)' },
+  { k: 'LS', label: 'Low South', color: 'var(--band-ls)' },
+  { k: 'HS', label: 'High South', color: 'var(--band-hs)' },
+];
+
+const state = { gas: GASES[0], view: 'global' };
+const NS = 'http://www.w3.org/2000/svg';
+function S(tag, attrs, parent) { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); if (parent) parent.appendChild(e); return e; }
+function H(tag, attrs, parent, text) { const e = document.createElement(tag); for (const k in (attrs || {})) e.setAttribute(k, attrs[k]); if (text != null) e.textContent = text; if (parent) parent.appendChild(e); return e; }
+function T(parent, x, y, str, cls, anchor) { const t = S('text', { x, y, class: cls, 'text-anchor': anchor || 'start' }, parent); t.textContent = str; return t; }
+const fmt = (v, d = 1) => (v == null ? '–' : v.toLocaleString('en-US', { minimumFractionDigits: d, maximumFractionDigits: d }));
+const signed = (v, d = 1) => (v > 0 ? '+' : v < 0 ? '−' : '') + fmt(Math.abs(v), d);
+function niceTicks(min, max, n) {
+  const span = max - min || 1; const raw = span / n; const mag = Math.pow(10, Math.floor(Math.log10(raw))); const r = raw / mag;
+  const step = (r < 1.5 ? 1 : r < 3 ? 2 : r < 7 ? 5 : 10) * mag;
+  const lo = Math.floor(min / step) * step, hi = Math.ceil(max / step) * step; const t = [];
+  for (let v = lo; v <= hi + step / 2; v += step) t.push(Math.round(v / step) * step);
+  return { lo, hi, t };
+}
+function decimalsFor(max) { return max < 10 ? 2 : 1; }
+
+/* ---------- tooltip ---------- */
+function showTip(host, x, rows, yr, top) {
+  const tip = host.querySelector('.tip'); tip.replaceChildren();
+  H('div', { class: 'yr' }, tip, yr);
+  rows.forEach(r => { const row = H('div', { class: 'row' }, tip); const i = H('i', {}, row); i.style.color = r.color; H('b', {}, row, r.value); H('span', {}, row, r.label); });
+  tip.hidden = false;
+  const w = host.clientWidth, tw = tip.offsetWidth;
+  let left = x + 14; if (left + tw > w) left = x - tw - 14; if (left < 0) left = 0;
+  tip.style.transform = `translate(${left}px, ${top || 8}px)`;
+}
+function hideTip(host) { host.querySelector('.tip').hidden = true; }
+
+/* ---------- generic line chart ---------- */
+function lineChart(host, cfg) {
+  const plot = host.querySelector('.plot');
+  const W = plot.clientWidth; if (!W) return;
+  const narrow = W < 640;
+  const Hh = cfg.height(narrow);
+  const showEventLabels = cfg.events && !narrow;
+  const m = { l: narrow ? 40 : 52, r: narrow ? 10 : (cfg.rightPad || 16), t: cfg.events ? (showEventLabels ? 64 : 24) : 14, b: 30 };
+  const years = cfg.years; const x0 = years[0], x1 = years[years.length - 1];
+  const all = cfg.series.flatMap(s => s.values.filter(v => v != null));
+  let mn = Math.min(...all), mx = Math.max(...all);
+  if (cfg.zero) mn = Math.min(0, mn);
+  const pad = (mx - mn) * 0.1 || 1;
+  const tk = niceTicks(cfg.zero ? mn : Math.max(0, mn - pad), mx + pad, narrow ? 4 : 5);
+  const X = y => m.l + (y - x0) / (x1 - x0) * (W - m.l - m.r);
+  const Y = v => Hh - m.b - (v - tk.lo) / (tk.hi - tk.lo) * (Hh - m.t - m.b);
+  plot.replaceChildren();
+  const svg = S('svg', { width: W, height: Hh, viewBox: `0 0 ${W} ${Hh}`, role: 'img', 'aria-label': cfg.aria }, plot);
+  if (cfg.shade && cfg.shade[0] >= x0) {
+    S('rect', { x: X(cfg.shade[0]), y: m.t - (cfg.events ? 6 : 0), width: X(cfg.shade[1]) - X(cfg.shade[0]), height: Hh - m.b - m.t + (cfg.events ? 6 : 0), class: 'shade' }, svg);
+    if (cfg.shadeLabel) { const sx = (X(cfg.shade[0]) + X(cfg.shade[1])) / 2; cfg.shadeLabel.forEach((ln, i) => T(svg, sx, Hh - m.b - 10 - (cfg.shadeLabel.length - 1 - i) * 16, ln, 'shade-t', 'middle')); }
+  }
+  tk.t.forEach(v => { if (v === tk.lo) return; S('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: 'gridline' }, svg); T(svg, m.l - 8, Y(v) + 4, v.toLocaleString('en-US'), 'ax', 'end'); });
+  S('line', { x1: m.l, x2: W - m.r, y1: Hh - m.b, y2: Hh - m.b, class: 'baseline' }, svg);
+  T(svg, m.l - 8, Hh - m.b + 4, tk.lo.toLocaleString('en-US'), 'ax', 'end');
+  const span = x1 - x0; const stepY = narrow ? (span > 30 ? 10 : 5) : (span > 25 ? 5 : 5);
+  for (let y = Math.ceil(x0 / stepY) * stepY; y <= x1; y += stepY) { S('line', { x1: X(y), x2: X(y), y1: Hh - m.b, y2: Hh - m.b + 5, stroke: 'var(--ink)', 'stroke-width': 1 }, svg); T(svg, X(y), Hh - m.b + 20, String(y), 'ax', 'middle'); }
+  if (cfg.unitLabel) T(svg, m.l - 8, m.t - (showEventLabels ? 10 : 8), cfg.unitLabel, 'ax', 'end');
+  if (cfg.events) {
+    const visible = EVENTS.filter(e => e.y >= x0 && e.y <= x1);
+    let lastLabelX = -1e9;
+    visible.forEach(e => {
+      S('line', { x1: X(e.y), x2: X(e.y), y1: showEventLabels ? 6 : m.t - 14, y2: Hh - m.b, class: 'event-line' }, svg);
+      if (showEventLabels) {
+        const left = e.side === 'left' && X(e.y) - m.l > 110; const dx = left ? -8 : 8; const anc = left ? 'end' : 'start';
+        T(svg, X(e.y) + dx, 16, String(e.y), 'ax-strong', anc);
+        T(svg, X(e.y) + dx, 32, e.l[0], 'ax', anc); T(svg, X(e.y) + dx, 46, e.l[1], 'ax', anc);
+      } else {
+        if (X(e.y) - lastLabelX >= 30) { T(svg, X(e.y), m.t - 16, '’' + String(e.y).slice(2), 'ax', 'middle'); lastLabelX = X(e.y); }
+      }
+    });
+    if (cfg.onEventKey) cfg.onEventKey(!showEventLabels, visible);
+  }
+  cfg.series.forEach(s => {
+    let d = ''; let pen = false;
+    s.values.forEach((v, i) => { if (v == null) { pen = false; return; } d += (pen ? 'L' : 'M') + X(years[i]).toFixed(1) + ',' + Y(v).toFixed(1); pen = true; });
+    S('path', { d, fill: 'none', stroke: s.color, 'stroke-width': s.width || 2.5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round', 'stroke-dasharray': s.dash || 'none' }, svg);
+  });
+  if (cfg.highlight) {
+    const h = cfg.highlight, s = cfg.series[0]; let d = '';
+    years.forEach((y, i) => { if (y >= h.from && y <= h.to && s.values[i] != null) d += (d ? 'L' : 'M') + X(y).toFixed(1) + ',' + Y(s.values[i]).toFixed(1); });
+    S('path', { d, fill: 'none', stroke: h.color, 'stroke-width': 5, 'stroke-linejoin': 'round', 'stroke-linecap': 'round' }, svg);
+    if (h.label) h.label.forEach((ln, i) => T(svg, X((h.from + h.to) / 2), Y(h.labelAt) + i * 15, ln, 'ann', 'middle').setAttribute('style', 'fill: var(--cfc-text)'));
+  }
+  if (cfg.annotate) cfg.annotate({ svg, X, Y, W, Hh, m, narrow });
+  // hover layer
+  const cross = S('line', { y1: m.t, y2: Hh - m.b, class: 'crosshair', visibility: 'hidden' }, svg);
+  const dots = cfg.series.map(s => S('circle', { r: 5, fill: s.color, stroke: 'var(--surface)', 'stroke-width': 2, visibility: 'hidden' }, svg));
+  const hit = S('rect', { x: m.l, y: 0, width: W - m.l - m.r, height: Hh, class: 'hit', tabindex: 0, 'aria-label': 'Chart values. Use left and right arrow keys to move between years.' }, svg);
+  let idx = years.length - 1;
+  function at(i) {
+    idx = Math.max(0, Math.min(years.length - 1, i)); const y = years[idx]; const x = X(y);
+    cross.setAttribute('x1', x); cross.setAttribute('x2', x); cross.setAttribute('visibility', 'visible');
+    const rows = [];
+    cfg.series.forEach((s, k) => { const v = s.values[idx]; if (v == null) { dots[k].setAttribute('visibility', 'hidden'); return; } dots[k].setAttribute('cx', x); dots[k].setAttribute('cy', Y(v)); dots[k].setAttribute('visibility', 'visible'); rows.push({ v, value: cfg.tipValue(v, s), label: s.label, color: s.color }); });
+    if (cfg.tipSort) rows.sort((a, b) => b.v - a.v);
+    showTip(host, x, rows, String(y), m.t + 4);
+  }
+  function off() { cross.setAttribute('visibility', 'hidden'); dots.forEach(d => d.setAttribute('visibility', 'hidden')); hideTip(host); }
+  const fromEvent = ev => { const r = svg.getBoundingClientRect(); const px = ev.clientX - r.left; const yr = x0 + (px - m.l) / (W - m.l - m.r) * (x1 - x0); return Math.round(yr) - x0; };
+  hit.addEventListener('pointermove', ev => at(fromEvent(ev)));
+  hit.addEventListener('pointerdown', ev => at(fromEvent(ev)));
+  hit.addEventListener('pointerleave', off);
+  hit.addEventListener('focus', () => at(idx));
+  hit.addEventListener('blur', off);
+  hit.addEventListener('keydown', ev => { if (ev.key === 'ArrowLeft') { at(idx - 1); ev.preventDefault(); } if (ev.key === 'ArrowRight') { at(idx + 1); ev.preventDefault(); } if (ev.key === 'Escape') off(); });
+}
+
+/* ---------- bar chart of yearly change ---------- */
+function barChart(host, cfg) {
+  const plot = host.querySelector('.plot');
+  const W = plot.clientWidth; if (!W) return;
+  const narrow = W < 640; const Hh = narrow ? 180 : 210;
+  const m = { l: narrow ? 40 : 52, r: narrow ? 10 : (cfg.rightPad || 16), t: 12, b: 30 };
+  const years = cfg.years; const vals = cfg.values;
+  const x0 = cfg.xMin, x1 = cfg.xMax;
+  const real = vals.filter(v => v != null);
+  const tk = niceTicks(Math.min(0, ...real), Math.max(0, ...real), narrow ? 3 : 4);
+  const X = y => m.l + (y - x0) / (x1 - x0) * (W - m.l - m.r);
+  const Y = v => Hh - m.b - (v - tk.lo) / (tk.hi - tk.lo) * (Hh - m.t - m.b);
+  plot.replaceChildren();
+  const svg = S('svg', { width: W, height: Hh, viewBox: `0 0 ${W} ${Hh}`, role: 'img', 'aria-label': cfg.aria }, plot);
+  if (cfg.shade) S('rect', { x: X(cfg.shade[0]), y: m.t, width: X(cfg.shade[1]) - X(cfg.shade[0]), height: Hh - m.b - m.t, class: 'shade' }, svg);
+  tk.t.forEach(v => { S('line', { x1: m.l, x2: W - m.r, y1: Y(v), y2: Y(v), class: v === 0 ? 'baseline' : 'gridline' }, svg); T(svg, m.l - 8, Y(v) + 4, (v > 0 ? '+' : v < 0 ? '−' : '') + Math.abs(v), 'ax', 'end'); });
+  const stepY = narrow ? 10 : 5;
+  for (let y = Math.ceil(x0 / stepY) * stepY; y <= x1; y += stepY) T(svg, X(y), Hh - m.b + 20, String(y), 'ax', 'middle');
+  const slot = (W - m.l - m.r) / (x1 - x0); const bw = Math.max(2, Math.min(18, slot * 0.66));
+  const bars = [];
+  years.forEach((y, i) => {
+    const v = vals[i]; if (v == null) return;
+    const top = v >= 0 ? Y(v) : Y(0); const h = Math.max(1.5, Math.abs(Y(v) - Y(0)));
+    const r = S('rect', { x: X(y) - bw / 2, y: top, width: bw, height: h, rx: Math.min(3, bw / 3), fill: v >= 0 ? 'var(--cfc)' : 'var(--ozone)' }, svg);
+    bars.push({ r, y, v, i });
+  });
+  const hit = S('rect', { x: m.l, y: 0, width: W - m.l - m.r, height: Hh, class: 'hit', tabindex: 0, 'aria-label': 'Yearly change values. Use left and right arrow keys to move between years.' }, svg);
+  let k = bars.length - 1;
+  function at(j) {
+    k = Math.max(0, Math.min(bars.length - 1, j)); const b = bars[k];
+    bars.forEach(o => o.r.setAttribute('opacity', o === b ? 1 : 0.45));
+    showTip(host, X(b.y), [{ value: signed(b.v, cfg.dec) + ' ppt', label: b.v >= 0 ? 'more than ' + (b.y - 1) : 'less than ' + (b.y - 1), color: b.v >= 0 ? 'var(--cfc)' : 'var(--ozone)' }], String(b.y));
+  }
+  function off() { bars.forEach(o => o.r.setAttribute('opacity', 1)); hideTip(host); }
+  const pick = ev => { const r = svg.getBoundingClientRect(); const yr = Math.round(x0 + (ev.clientX - r.left - m.l) / (W - m.l - m.r) * (x1 - x0)); let best = 0; bars.forEach((b, j) => { if (Math.abs(b.y - yr) < Math.abs(bars[best].y - yr)) best = j; }); at(best); };
+  hit.addEventListener('pointermove', pick); hit.addEventListener('pointerdown', pick);
+  hit.addEventListener('pointerleave', off); hit.addEventListener('focus', () => at(k)); hit.addEventListener('blur', off);
+  hit.addEventListener('keydown', ev => { if (ev.key === 'ArrowLeft') { at(k - 1); ev.preventDefault(); } if (ev.key === 'ArrowRight') { at(k + 1); ev.preventDefault(); } if (ev.key === 'Escape') off(); });
+}
+
+/* ---------- explorer ---------- */
+const picker = document.getElementById('picker');
+GROUPS.forEach(g => {
+  const grp = H('div', { class: 'chip-group', role: 'group', 'aria-label': g.label }, picker);
+  H('div', { class: 'glabel' }, grp, g.label);
+  GASES.filter(x => x.group === g.key).forEach(gas => {
+    const b = H('button', { class: 'chip', type: 'button', 'aria-pressed': 'false', 'data-slug': gas.slug }, grp, gas.name);
+    b.addEventListener('click', () => selectGas(gas.slug, true));
+  });
+});
+
+function stats(gas) {
+  const d = DATA[gas.id]; let pk = 0; d.G.forEach((v, i) => { if (v != null && v > d.G[pk]) pk = i; });
+  const last = d.G.length - 1; return { d, pk, last, pct: 100 * (d.G[last] / d.G[pk] - 1) };
+}
+
+function renderMain() {
+  const gas = state.gas; const { d, pk, last, pct } = stats(gas); const dec = decimalsFor(d.G[pk]);
+  const host = document.getElementById('main-chart');
+  const series = state.view === 'global'
+    ? [{ label: 'Global average', values: d.G, color: 'var(--cfc)', width: 3 }]
+    : BANDS.map(b => ({ label: b.label, values: d[b.k], color: b.color, width: 2.25 })).concat([{ label: 'Global average', values: d.G, color: 'var(--ink)', width: 2, dash: '5 5' }]);
+  const legend = document.getElementById('legend');
+  legend.hidden = state.view === 'global'; legend.replaceChildren();
+  if (state.view !== 'global') series.forEach(s => { const sp = H('span', {}, legend); const i = H('i', {}, sp); i.style.color = s.color; if (s.dash) i.style.borderTopStyle = 'dashed'; sp.appendChild(document.createTextNode(s.label)); });
+  lineChart(host, {
+    years: d.y, series, events: true, unitLabel: 'ppt',
+    height: n => (n ? 300 : 400),
+    rightPad: state.view === 'global' ? 96 : 16,
+    shade: gas.id === 'CFC11' ? [2012.5, 2018.5] : null, shadeLabel: gas.id === 'CFC11' ? ['Mystery', 'slowdown'] : null,
+    aria: `Line chart of ${gas.name} in the atmosphere from ${d.y[0]} to ${d.y[last]}. Highest: ${fmt(d.G[pk], dec)} ppt in ${d.y[pk]}. ${d.y[last]}: ${fmt(d.G[last], dec)} ppt.`,
+    tipValue: v => fmt(v, dec) + ' ppt', tipSort: state.view !== 'global',
+    onEventKey: (show, visible) => { const key = document.getElementById('event-key'); key.hidden = !show; key.replaceChildren(); visible.forEach(e => { const li = H('li', {}, key); H('b', {}, li, '’' + String(e.y).slice(2) + ' '); li.appendChild(document.createTextNode(e.short)); }); },
+    annotate: state.view !== 'global' ? null : ({ svg, X, Y, W, m, narrow }) => {
+      const px = X(d.y[pk]), py = Y(d.G[pk]);
+      if (pk !== last) {
+        S('circle', { cx: px, cy: py, r: 6, fill: 'var(--cfc)', stroke: 'var(--surface)', 'stroke-width': 2.5 }, svg);
+        const lx = Math.max(m.l + 50, Math.min(W - m.r - 60, px));
+        T(svg, lx, py + 26, 'Peak ' + d.y[pk], 'ann-sub', 'middle'); T(svg, lx, py + 42, fmt(d.G[pk], dec) + ' ppt', 'ann', 'middle');
+      }
+      const ex = X(d.y[last]), ey = Y(d.G[last]);
+      S('circle', { cx: ex, cy: ey, r: 6, fill: 'var(--cfc)', stroke: 'var(--surface)', 'stroke-width': 2.5 }, svg);
+      if (narrow) { T(svg, ex - 4, ey - 26, String(d.y[last]), 'ann-sub', 'end'); T(svg, ex - 4, ey - 11, fmt(d.G[last], dec) + ' ppt', 'ann', 'end'); }
+      else { T(svg, ex + 12, ey - 4, String(d.y[last]), 'ann-sub'); T(svg, ex + 12, ey + 13, fmt(d.G[last], dec) + ' ppt', 'ann'); }
+    },
+  });
+  // bars
+  const ch = d.G.map((v, i) => (i === 0 || v == null || d.G[i - 1] == null ? null : v - d.G[i - 1]));
+  document.getElementById('bars-title').textContent = `How much did ${gas.name} change each year?`;
+  barChart(document.getElementById('bar-chart'), { years: d.y, values: ch, xMin: d.y[0], xMax: d.y[last], dec: d.G[pk] < 10 ? 2 : 1, rightPad: state.view === 'global' ? 96 : 16, shade: gas.id === 'CFC11' ? [2012.5, 2018.5] : null, aria: `Bar chart of the yearly change in ${gas.name}, in ppt per year.` });
+}
+
+function renderHead() {
+  const gas = state.gas; const { d, pk, last, pct } = stats(gas); const dec = decimalsFor(d.G[pk]);
+  document.getElementById('g-name').textContent = gas.name;
+  document.getElementById('g-formula').textContent = gas.f;
+  const g = GROUPS.find(x => x.key === gas.group); const tag = document.getElementById('g-tag');
+  tag.textContent = g.tag; tag.className = 'tag ' + gas.group;
+  document.getElementById('g-desc').textContent = gas.use;
+  const tiles = document.getElementById('g-tiles'); tiles.replaceChildren();
+  const tile = (k, v, s) => { const t = H('div', { class: 'tile' }, tiles); H('div', { class: 'k' }, t, k); H('div', { class: 'v' }, t, v); H('div', { class: 's' }, t, s); };
+  tile('Highest level', fmt(d.G[pk], dec) + ' ppt', pk === last ? 'in ' + d.y[pk] + ', still rising' : 'in ' + d.y[pk]);
+  tile('In ' + d.y[last], fmt(d.G[last], dec) + ' ppt', 'first measured: ' + fmt(d.G[0], dec) + ' ppt in ' + d.y[0]);
+  tile('Change from highest', pk === last ? '0%' : signed(pct, 0) + '%', pk === last ? 'has not peaked yet' : 'since ' + d.y[pk]);
+  tile('Lasts in the air', '~' + gas.life + ' years', 'average lifetime');
+  document.getElementById('num-summary').textContent = 'Show the numbers for ' + gas.name;
+  const tb = document.querySelector('#num-table tbody'); tb.replaceChildren();
+  d.y.forEach((y, i) => { const tr = H('tr', {}, tb); H('td', {}, tr, String(y)); ['G', 'HN', 'LN', 'LS', 'HS'].forEach(k => H('td', {}, tr, fmt(d[k][i], dec === 2 ? 2 : 2))); });
+  document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', String(c.dataset.slug === gas.slug)));
+}
+
+function selectGas(slug, fromUser) {
+  const gas = GASES.find(g => g.slug === slug); if (!gas) return;
+  state.gas = gas; renderHead(); renderMain();
+  if (fromUser) { try { history.replaceState(null, '', '#' + slug); } catch (e) {} }
+}
+function setView(v) {
+  state.view = v;
+  document.getElementById('v-global').setAttribute('aria-pressed', String(v === 'global'));
+  document.getElementById('v-bands').setAttribute('aria-pressed', String(v === 'bands'));
+  renderMain();
+}
+document.getElementById('v-global').addEventListener('click', () => setView('global'));
+document.getElementById('v-bands').addEventListener('click', () => setView('bands'));
+document.querySelectorAll('[data-show]').forEach(b => b.addEventListener('click', () => {
+  if (b.dataset.view) setView(b.dataset.view);
+  selectGas(b.dataset.show, true);
+  document.getElementById('picker').scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' });
+}));
+document.getElementById('copy-csv').addEventListener('click', () => {
+  const d = DATA[state.gas.id]; const lines = ['year,global,high_north,low_north,low_south,high_south'];
+  d.y.forEach((y, i) => lines.push([y, d.G[i], d.HN[i], d.LN[i], d.LS[i], d.HS[i]].map(v => (v == null ? '' : v)).join(',')));
+  const csv = lines.join('\n'); const status = document.getElementById('copy-status');
+  const fallback = () => { const ta = H('textarea', { 'aria-label': 'CSV data' }, document.querySelector('.numbers-bar')); ta.value = csv; ta.style.width = '100%'; ta.rows = 6; ta.select(); status.textContent = 'Select all and copy the text below.'; };
+  try { navigator.clipboard.writeText(csv).then(() => { status.textContent = 'Copied ' + state.gas.name + ' data.'; }, fallback); } catch (e) { fallback(); }
+});
+
+/* ---------- case file gap chart ---------- */
+function renderGap() {
+  const d = DATA.CFC11; const gap = d.y.map((y, i) => (d.HN[i] == null || d.HS[i] == null ? null : +(d.HN[i] - d.HS[i]).toFixed(2)));
+  lineChart(document.getElementById('gap-chart'), {
+    years: d.y, series: [{ label: 'North minus south', values: gap, color: 'var(--ink)', width: 2.5 }], zero: true,
+    height: () => 220, shade: [2012, 2017], highlight: { from: 2012, to: 2017, color: 'var(--cfc)', label: ['Gap grows', 'again!'], labelAt: 9 },
+    aria: 'Line chart of how much more CFC-11 is in Northern Hemisphere air than Southern: about 20 ppt in 1988, down to 2.2 ppt by 2012, rising again to 3.7 ppt in 2017, then falling to about 1 ppt by 2024.',
+    tipValue: v => fmt(v, 1) + ' ppt',
+    annotate: ({ svg, X, Y }) => { const i = d.y.indexOf(1988); S('circle', { cx: X(1988), cy: Y(gap[i]), r: 5, fill: 'var(--ink)' }, svg); T(svg, X(1988) + 10, Y(gap[i]) + 4, '20 ppt in 1988', 'ann'); },
+  });
+}
+
+/* ---------- report card ---------- */
+(function renderReport() {
+  const rows = ['CH3CCl3', 'H1211', 'CCl4', 'CFC11', 'CFC113', 'CFC12'].map(id => GASES.find(g => g.id === id));
+  const host = document.getElementById('report');
+  rows.forEach(gas => {
+    const { pct } = stats(gas); const r = H('div', { class: 'rrow' }, host);
+    const n = H('div', { class: 'rn' }, r, gas.name); H('span', {}, n, 'lasts ~' + gas.life + ' yrs');
+    H('div', { class: 'rv' }, r, '−' + Math.round(-pct) + '%');
+    const bar = H('div', { class: 'rbar', role: 'img', 'aria-label': gas.name + ' down ' + Math.round(-pct) + ' percent' }, r); const i = H('i', {}, bar); i.style.width = (-pct).toFixed(1) + '%';
+  });
+})();
+
+/* ---------- chain reaction ---------- */
+const ATOMS = {
+  C: { r: 24, fill: 'var(--carbon)', t: 'C' }, Cl1: { r: 28, fill: 'var(--cfc)', t: 'Cl' }, Cl2: { r: 28, fill: 'var(--cfc)', t: 'Cl' }, Cl3: { r: 28, fill: 'var(--cfc)', t: 'Cl' },
+  F: { r: 20, fill: 'var(--fluorine)', t: 'F', dark: true }, Oa: { r: 21, fill: 'var(--ozone)', t: 'O' }, Ob: { r: 21, fill: 'var(--ozone)', t: 'O' }, Oc: { r: 21, fill: 'var(--ozone)', t: 'O' }, Od: { r: 21, fill: 'var(--ozone)', t: 'O' },
+};
+const BASE = { C: [140, 160], Cl1: [112, 128], Cl2: [172, 130], Cl3: [122, 194], F: [166, 186], Oa: [430, 120], Ob: [462, 104], Oc: [494, 120], Od: [520, 236] };
+const STAGES = [
+  { pos: {}, uv: 0, labels: { 'l-cfc': 1, 'l-o3': 1, 'l-o': 1 }, title: 'Drift up. A CFC-11 molecule reaches the stratosphere, where ozone lives.', eq: '' },
+  { pos: { Cl1: [290, 120] }, uv: 1, labels: { 'l-cfc': 1, 'l-o3': 1, 'l-o': 1 }, title: 'Break. Strong UV sunlight snaps a chlorine atom off the CFC.', eq: 'CCl₃F + UV → Cl + CCl₂F' },
+  { pos: { Cl1: [398, 156], Oa: [432, 156], Ob: [548, 56], Oc: [580, 60] }, uv: 0, labels: { 'l-o': 1, 'l-o2a': 1 }, title: 'Attack. Chlorine steals an oxygen atom. That ozone molecule is destroyed.', eq: 'Cl + O₃ → ClO + O₂' },
+  { pos: { Cl1: [340, 236], Oa: [486, 236], Ob: [566, 40], Oc: [598, 44] }, uv: 0, labels: { 'l-o2b': 1, 'l-free': 1 }, title: 'Repeat. The oxygen atoms pair up, and the chlorine is free to attack again.', eq: 'ClO + O → Cl + O₂' },
+];
+const atomEls = {};
+(function buildAtoms() {
+  const g = document.getElementById('atoms');
+  Object.entries(ATOMS).forEach(([k, a]) => {
+    const el = S('g', { class: 'atom' }, g);
+    S('circle', { r: a.r, fill: a.fill, stroke: 'var(--tint-ozone)', 'stroke-width': 2.5 }, el);
+    const t = S('text', { y: 6, 'text-anchor': 'middle', class: 'atom-t' + (a.dark ? ' dark' : '') }, el); t.textContent = a.t;
+    atomEls[k] = el;
+  });
+})();
+const rx = { stage: 0, count: 0, looped: false, ff: null };
+function place(stageIdx, instant) {
+  const st = STAGES[stageIdx];
+  Object.keys(ATOMS).forEach(k => {
+    let p = BASE[k];
+    // after the first loop the chlorine starts from its "free" spot
+    if (k === 'Cl1' && rx.looped && stageIdx < 2) p = [340, 236];
+    if (st.pos[k]) p = st.pos[k];
+    const el = atomEls[k]; el.classList.toggle('instant', !!instant);
+    el.style.transform = `translate(${p[0]}px, ${p[1]}px)`;
+  });
+  document.getElementById('uv').setAttribute('opacity', st.uv);
+  ['l-cfc', 'l-o3', 'l-o', 'l-o2a', 'l-o2b', 'l-free'].forEach(id => document.getElementById(id).setAttribute('opacity', st.labels[id] ? 1 : 0));
+  if (rx.looped && stageIdx < 2) { document.getElementById('l-cfc').setAttribute('opacity', 0); }
+  document.getElementById('cap-title').textContent = st.title;
+  document.getElementById('cap-eq').textContent = st.eq;
+  document.querySelectorAll('#steps li').forEach(li => li.classList.toggle('on', +li.dataset.step === stageIdx));
+  document.getElementById('r-back').disabled = stageIdx === 0 && !rx.looped;
+  document.getElementById('r-next').textContent = stageIdx === 3 ? 'Strike again' : 'Next step';
+}
+function setCount(n) { rx.count = n; document.getElementById('count').textContent = n.toLocaleString('en-US'); }
+function next() {
+  if (rx.stage < 3) { rx.stage++; if (rx.stage === 2) setCount(rx.count + 1); place(rx.stage); return; }
+  // loop: fresh ozone and a fresh oxygen atom appear, chlorine attacks again
+  rx.looped = true;
+  ['Oa', 'Ob', 'Oc', 'Od'].forEach(k => { const el = atomEls[k]; el.classList.add('instant'); el.style.opacity = 0; el.style.transform = `translate(${BASE[k][0]}px, ${BASE[k][1]}px)`; });
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    ['Oa', 'Ob', 'Oc', 'Od'].forEach(k => { atomEls[k].classList.remove('instant'); atomEls[k].style.opacity = 1; });
+    rx.stage = 2; setCount(rx.count + 1); place(2);
+  }));
+}
+function back() { if (rx.stage > 0) { rx.stage--; if (rx.stage === 1 && rx.count > 0) setCount(rx.count - 1); place(rx.stage); } }
+function reset() { if (rx.ff) cancelAnimationFrame(rx.ff); rx.ff = null; rx.stage = 0; rx.looped = false; setCount(0); Object.values(atomEls).forEach(el => (el.style.opacity = 1)); place(0, true); document.getElementById('r-ff').disabled = false; }
+function fastForward() {
+  if (rx.stage < 3) { rx.stage = 3; if (rx.count === 0) rx.count = 1; place(3); }
+  const start = rx.count, end = 100000, t0 = performance.now(), dur = matchMedia('(prefers-reduced-motion: reduce)').matches ? 1 : 2400;
+  document.getElementById('r-ff').disabled = true;
+  const tick = now => { const p = Math.min(1, (now - t0) / dur); const e = 1 - Math.pow(1 - p, 3); setCount(Math.round(start + (end - start) * e)); if (p < 1) rx.ff = requestAnimationFrame(tick); else { rx.ff = null; document.getElementById('cap-title').textContent = 'One chlorine atom can destroy up to 100,000 ozone molecules before it is finally locked away in a less reactive compound.'; document.getElementById('cap-eq').textContent = ''; } };
+  rx.ff = requestAnimationFrame(tick);
+}
+document.getElementById('r-next').addEventListener('click', next);
+document.getElementById('r-back').addEventListener('click', back);
+document.getElementById('r-reset').addEventListener('click', reset);
+document.getElementById('r-ff').addEventListener('click', fastForward);
+place(0, true);
+
+/* ---------- boot ---------- */
+function renderAll() { renderMain(); renderGap(); }
+const initial = (location.hash || '').slice(1);
+selectGas(GASES.some(g => g.slug === initial) ? initial : 'cfc-11', false);
+renderGap();
+let rt; const ro = new ResizeObserver(() => { clearTimeout(rt); rt = setTimeout(renderAll, 60); });
+['main-chart', 'bar-chart', 'gap-chart'].forEach(id => ro.observe(document.getElementById(id)));
+window.addEventListener('hashchange', () => { const s = location.hash.slice(1); if (GASES.some(g => g.slug === s) && s !== state.gas.slug) selectGas(s, false); });
+</script>
+</body>
+</html>

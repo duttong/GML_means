@@ -117,3 +117,7 @@ The per-gas CSV files contain:
 - The script excludes the current calendar year by default because the data may not yet be fully quality controlled.
 - Figures show background-site observations together with the annual mean time series.
 - The software license information is provided in <strong>LICENSE.md</strong>.
+
+## Outreach materials
+
+The <strong>docs</strong> folder holds "The Hole Story," a poster and an interactive web page for high school students that explain CFCs and ozone depletion using these annual means. See <strong>docs/README.md</strong>.
